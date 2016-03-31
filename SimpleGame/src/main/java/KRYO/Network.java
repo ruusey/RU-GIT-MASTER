@@ -47,5 +47,12 @@ static public class ADDCHARACTER{
 		
 		
 	}
+static public class DISCONNECT{
+	
+	public String UUID;
+	
+	
+	
+}
 	
 }

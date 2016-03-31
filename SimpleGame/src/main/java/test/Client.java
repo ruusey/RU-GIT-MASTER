@@ -21,42 +21,11 @@ import processing.core.PApplet;
 
 public final class Client extends PApplet{
 
-    static final int PORT = Integer.parseInt(System.getProperty("port", "5000"));
-    static Genson gen = new Genson();
-    static boolean handShake = false;
+    
     public static Player p;
     public static void main(String[] args) {
     	PApplet.main(Client.class.getName());
-        EventLoopGroup group = new NioEventLoopGroup();
-        try {
-            Bootstrap b = new Bootstrap();
-            b.group(group)
-             .channel(NioDatagramChannel.class)
-             .handler(new ClientHandler());
-
-            Channel ch = b.bind(0).sync().channel();
-
-            // Broadcast the QOTM request to port 8080.
-            if(!handShake){
-            	UUID id = UUID.randomUUID();
-            	  ch.writeAndFlush(serialize(new HELLO(id.toString()), new InetSocketAddress("localhost", PORT))).sync();
-            }
-          
-                    
-
-            
-            // QuoteOfTheMomentClientHandler will close the DatagramChannel when a
-            // response is received.  If the channel is not closed within 5 seconds,
-            // print an error message and quit.
-            if (!ch.closeFuture().await(5000)) {
-                System.err.println("Quote request timed out.");
-            }
-        } catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-            group.shutdownGracefully();
-        }
+       
     }
     public static DatagramPacket serialize(Object o , InetSocketAddress sender){
 		return new DatagramPacket(Unpooled.copiedBuffer(gen.serialize(o), CharsetUtil.UTF_8), sender);

@@ -1,7 +1,6 @@
 package KRYO;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.UUID;
 
@@ -43,6 +42,9 @@ public class PositionClient extends PApplet{
 			}
 
 			public void disconnected (Connection connection) {
+				DISCONNECT c = new DISCONNECT();
+				c.UUID=id;
+				client.sendUDP(c);
 				System.exit(0);
 			}
 		}));
@@ -60,6 +62,7 @@ public class PositionClient extends PApplet{
 			
 		} catch (IOException ex) {
 			ex.printStackTrace();
+			System.exit(0);
 		}
 
 	}
