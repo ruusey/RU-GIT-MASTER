@@ -1,53 +1,56 @@
-package test;
+package finalproj;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.DatagramPacket;
-import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.util.CharsetUtil;
-
-import java.net.InetSocketAddress;
-import java.util.UUID;
-
-import com.owlike.genson.Genson;
-
-import packets.HELLO;
 import packets.UPDATE;
 import processing.core.PApplet;
+import test.ClientHandler;
+
+import java.util.ArrayList;
+
+import finalproj.Player;
 
 public final class Client extends PApplet{
 
+    ArrayList<ArrayList<Tile>> tiles = new ArrayList<ArrayList<Tile>>();
+    ArrayList<ArrayList<Tile>> renderedTiles = new ArrayList<ArrayList<Tile>>();
     
     public static Player p;
     public static void main(String[] args) {
     	PApplet.main(Client.class.getName());
        
     }
-    public static DatagramPacket serialize(Object o , InetSocketAddress sender){
-		return new DatagramPacket(Unpooled.copiedBuffer(gen.serialize(o), CharsetUtil.UTF_8), sender);
-	}
+    
     public void draw(){
+    	background(0);
     	if(p!=null){
-    		background(0);
+    		
+    		p.update();
         	fill(255);
         	ellipse(p.pos.x,p.pos.y,50,50);
-        	ClientHandler.packetQ.add(new UPDATE(p.pos.add(p.vel),p.UUID));
+        
     	}
     	
     }
     public void setup(){
-    	
+    	p = new Player(400,400,20);
+    	for(int x=0; x<tiles.size(); x++){
+    		
+    		for(int y=0; y<tiles.get(0).size(); y++){
+    			tiles.get(x).add(new Tile(x*10,y*10,10,10));
+        		
+        		
+        	}
+    		
+    	}
     }
     public void settings(){
     	size(640,480);
     }
     public void keyPressed(){
     	if(key=='w'){
-    		p.vel.y=-5;
+    		for(ArrayList<Tile> t1 : tiles){
+    			
+    		}
+    		
     		
     	}else if(key=='s'){
     		p.vel.y=5;
@@ -73,4 +76,12 @@ public final class Client extends PApplet{
     		p.vel.x=0;
     	}
     }
+    public void loadAndRomoveLeft(){
+    	for(ArrayList<Tile> t1 : tiles){
+			for(int x = 0 ; x< t1.size();x++){
+				Tile t = new Tile(1,1,1,1);
+			}
+		}
+    }
+ 
 }

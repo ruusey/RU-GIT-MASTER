@@ -9,6 +9,7 @@ import packets.UPDATE;
 
 import com.owlike.genson.Genson;
 
+import finalproj.Client;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

@@ -9,8 +9,8 @@ public class Player implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	PVector pos;
-	PVector vel;
+	public PVector pos;
+	public PVector vel;
 	String UUID;
 	public Player(int x, int y,String UUID){
 		pos=new PVector(x,y);
