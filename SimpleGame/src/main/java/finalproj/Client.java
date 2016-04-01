@@ -48,17 +48,11 @@ public final class Client extends PApplet {
 			int mapHeight = tiles.get(0).size() * tileSize;
 			
 			int offsetX = width/2 - Math.round(p.pos.x) ; 
-			offsetX = Math.min(offsetX, 0); // offset cannot be greater than 0
-			offsetX = Math.max(offsetX, width - mapWidth); // offset cannot be
-															// less than the
-															// differnce between
-															// the screen width
-															// and the map width
-			// get the y offset to draw all sprites and tiles
-			int offsetY = height / 2 - Math.round(p.pos.y); // same thing with
-															// the y axis
+			offsetX = Math.min(offsetX, 0); 
+			offsetX = Math.max(offsetX, width - mapWidth); 
+			int offsetY = height / 2 - Math.round(p.pos.y); 
 			offsetY = Math.min(offsetY, 0);
-			//offsetY = Math.max(offsetY, height - mapHeight);
+			offsetY = Math.max(offsetY, height - mapHeight);
 			int firstTileX = (-offsetX) / tileSize;
 			// System.out.println("" + firstTileX);
 			int lastTileX = firstTileX + (width / tileSize) + 1;
@@ -78,7 +72,7 @@ public final class Client extends PApplet {
 			ellipse(p.pos.x, p.pos.y, 40, 40);
 			p.update();
 			tryShoot();
-			p.updateShots();
+			p.updateShots(); 
 			for (Projectile pr : p.shots) {
 
 				fill(0, 255, 0);
