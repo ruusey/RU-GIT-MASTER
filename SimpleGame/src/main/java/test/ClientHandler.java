@@ -26,7 +26,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 		if(o instanceof HELLO){
 			String UUID = ((HELLO)o).UUID;
 			System.out.println("HELLO responded to, creating new Player");
-			Client.p=new Player(200,200,UUID);
+			//Client.p=new Player(200,200,UUID);
 			Client.handShake=true;
 		}
 		if(o instanceof UPDATE){
