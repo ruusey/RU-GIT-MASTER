@@ -8,9 +8,9 @@ public class Projectile {
 	PVector vel;
 	int dmg;
 	float angle;
-	public Projectile(float x, float y, PVector vel,int dmg){
+	public Projectile(float x, float y, float sx, float sy, PVector vel, int dmg){
 		pos = new PVector(x,y);
-		
+		source = new PVector(x,y);
 		this.vel=vel;
 		this.dmg=dmg;
 	}

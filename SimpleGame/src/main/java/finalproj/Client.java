@@ -70,13 +70,23 @@ public final class Client extends PApplet {
 		
 			fill(255, 0, 0);
 			ellipse(p.pos.x, p.pos.y, 40, 40);
+			
+			pushMatrix();
+			fill(255,100,0);
+			g.translate(camX, camY);   
+			text("Player X:"+p.pos.x+", Player Y:"+p.pos.y,20,20);
+			popMatrix();
 			p.update();
 			tryShoot();
 			p.updateShots(); 
+			//g.translate(pr.source.x/2,pr.source.y/2);  
 			for (Projectile pr : p.shots) {
-
+				//pushMatrix();
+				
 				fill(0, 255, 0);
 				ellipse(pr.pos.x, pr.pos.y, 20, 20);
+				//popMatrix();
+				
 			}
 
 		}
@@ -108,17 +118,17 @@ public final class Client extends PApplet {
 	public void keyPressed() {
 		if (key == 'w') {
 
-			p.vel.y = -5;
+			p.vel.y = -3;
 
 		} else if (key == 's') {
-			p.vel.y = 5;
+			p.vel.y = 3;
 		} else if (key == 'a') {
-			p.vel.x = -5;
+			p.vel.x = -3;
 		} else if (key == 'd') {
-			p.vel.x = 5;
+			p.vel.x = 3;
 		} else if (key == ' ') {
 			tileSize -= 10;
-		}
+		} 
 
 	}
 
@@ -146,11 +156,11 @@ public final class Client extends PApplet {
 					- (height / 2))
 					+ PI / 2;
 			System.out.println(angle);
-			float xVelocity = (3) * cos(angle);
-			float yVelocity = (3) * sin(angle);
+			float xVelocity = (5) * cos(angle);
+			float yVelocity = (5) * sin(angle);
 			PVector vel = new PVector(xVelocity, yVelocity);
 
-			p.shots.add(new Projectile(p.pos.x, p.pos.y, vel, 10));
+			p.shots.add(new Projectile(p.pos.x, p.pos.y,p.pos.x,p.pos.y, vel, 10));
 			lastCheck = System.currentTimeMillis();
 		}
 	}
