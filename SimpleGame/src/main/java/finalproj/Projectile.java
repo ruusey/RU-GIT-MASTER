@@ -10,21 +10,28 @@ public class Projectile extends Movement{
 
 	int dmg;
 	PVector source;
-    public float frequency = 0.5f;  
-    public float magnitude = 8.5f; 
-    int updates;
-	public Projectile(float x, float y, float sx, float sy,PVector vel, int diameter, int dmg){
+	int diameter;
+    public float angle;
+    float mag;
+    float range;
+    
+	public Projectile(float x, float y, float sx, float sy, PVector vel, float angle,int diameter, int dmg, float mag, float range){
 		super(x,y,vel,diameter);
 		source = new PVector(sx,sy);
 		this.dmg=dmg;
+		this.angle=angle;
+		this.mag=mag;
+		this.range=range;
+		this.diameter=diameter;
 	}
 	public void update(){
-		
-		pos.add(vel);
-		pos.x+=Math.cos (updates * frequency) * magnitude;
-		pos.y+=Math.cos (updates * frequency) * magnitude;
+	
+		PVector up = PVector.fromAngle(angle);
+		up.setMag(mag);
+		pos.add(up);
+		//angle+=0.05;
 		colBox.x=(int) pos.x-colBox.width/2;
 		colBox.y=(int) pos.y-colBox.height/2;
-		updates++;
+		
 	}
 }

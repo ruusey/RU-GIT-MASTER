@@ -50,7 +50,7 @@ public class Player extends Movement {
 	public void updateShots() {
 		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
 		for (Projectile p : shots) {
-			if (PVector.dist(p.source, p.pos) > 300
+			if (PVector.dist(p.source, p.pos) > p.range
 					|| Client.checkCollision(p.colBox) != null) {
 				shotsToRemove.add(p);
 			} else {
