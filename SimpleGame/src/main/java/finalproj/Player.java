@@ -8,17 +8,19 @@ import processing.core.PVector;
 
 public class Player extends Movement {
 
-	int health;
+	public int health;
 	public boolean firing;
 	ArrayList<Projectile> shots = new ArrayList<Projectile>();
-
+	public HealthBar hp;
 	public Player(int x, int y, int health, int diameter) {
 		super(x, y, diameter, diameter);
 		pos = new PVector(x, y);
 		vel = new PVector(0, 0);
 		this.health = health;
 		firing = false;
-
+		final int x1 = (700 - diameter*2) / 2;
+		final int y1 = (700) / 2;
+		hp = new HealthBar((int)x1,(int)y1,200,diameter/2, health);
 		colBox = new Rectangle((int) pos.x - (diameter / 2), (int) pos.y
 				- (diameter / 2), diameter, diameter);
 	}
@@ -26,6 +28,7 @@ public class Player extends Movement {
 	public void update() {
 
 		pos.add(vel);
+		hp.update();
 		colBox.x = (int) pos.x - colBox.width / 2;
 		colBox.y = (int) pos.y - colBox.height / 2;
 

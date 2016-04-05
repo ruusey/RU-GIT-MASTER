@@ -14,6 +14,7 @@ public class Projectile extends Movement{
     public float angle;
     float mag;
     float range;
+    public boolean isHit;
     
 	public Projectile(float x, float y, float sx, float sy, PVector vel, float angle,int diameter, int dmg, float mag, float range){
 		super(x,y,vel,diameter);
@@ -23,6 +24,7 @@ public class Projectile extends Movement{
 		this.mag=mag;
 		this.range=range;
 		this.diameter=diameter;
+		this.isHit=false;
 	}
 	public void update(){
 	
