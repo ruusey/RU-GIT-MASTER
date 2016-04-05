@@ -21,8 +21,8 @@ public class HealthBar {
 	}
 	public void update(){
 		float unit = actualHealth*1.0f/maxHealth*1.0f;
-		if(actualHealth<maxHealth){
-			System.out.println();
+		if(actualHealth<0){
+			actualHealth=0;
 		}
 		
 		green.width = (int) (unit * width);

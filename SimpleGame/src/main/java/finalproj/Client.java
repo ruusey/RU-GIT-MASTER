@@ -5,27 +5,33 @@ import processing.core.PVector;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.List;
-
 import com.owlike.genson.Genson;
 
 import finalproj.Player;
 
 public final class Client extends PApplet {
-
-	static ArrayList<ArrayList<Tile>> tiles = new ArrayList<ArrayList<Tile>>();
+	// OUR LEVEL IN TILES
+	public static ArrayList<ArrayList<Tile>> tiles = new ArrayList<ArrayList<Tile>>();
 	Genson gen = new Genson();
+
+	// THE TILE WIDTH AND HEIGHT
 	int tileSize = 128;
-	static PVector center;
-	public PApplet graphics = this;
-	public static Player p;
-	long lastCheck;
+
+	// CAMERA LOCATION
 	int camX;
 	int camY;
-	PVector screenLoc;
-	Enemy e;
-	
 
+	// GAME ENTITIES
+	public static Enemy e;
+	public static Player p;
+
+	PVector screenLoc;
+	// LAST CHECK FOR WHEN THE CLIENT FIRED
+	long lastCheck;
+
+	static int screenWidth;
+	static int screenHeight;
+	
 	public static void main(String[] args) {
 
 		PApplet.main(Client.class.getName());
@@ -37,12 +43,10 @@ public final class Client extends PApplet {
 		if (p != null) {
 
 			// GIVE US SOME INFO ABOUT THE PLAYER EVERY ONCE IN A WHILE
-			Tile tile = tiles.get((int) p.pos.x / tileSize).get(
-					(int) p.pos.y / tileSize);
+			Tile tile = tiles.get((int) p.pos.x / tileSize).get((int) p.pos.y / tileSize);
 
 			if (frameCount % 120 == 0) {
-				System.out.println("  Tile " + tile.colBox.x + " : "
-						+ tile.colBox.y + " : " + tile.takesCol);
+				System.out.println("  Tile " + tile.colBox.x + " : " + tile.colBox.y + " : " + tile.takesCol);
 				System.out.println("Player " + p.colBox.x + " : " + p.colBox.y);
 
 			}
@@ -68,21 +72,27 @@ public final class Client extends PApplet {
 
 			g.translate(-camX, -camY);
 
-			p.update();
-			p.updateShots();
-			p.hp.update();
-			e.attack();
-			e.updateShots();
+		
+
+			
 
 			drawTiles();
-			drawPlayer();
 			drawMiscTxt();
 			playerShoot();
 			drawProjectiles();
 			checkPlayerHit();
-			drawEnemy();
+			checkEnemyHit();
+		
 			drawEProjectiles();
-
+			
+			p.update();
+			p.updateShots();
+			p.hp.update();
+			
+			e.update();
+			e.attack();
+			e.updateShots();
+			e.hp.update();
 			// HANDLE COLIISION WITH TILES
 			Rectangle col = checkCollision(p.colBox);
 			if (col != null) {
@@ -121,111 +131,110 @@ public final class Client extends PApplet {
 				if (t.takesCol) {
 
 					fill(0, 255, 0);
-					rect((x * tileSize) + offsetX, (y * tileSize) + offsetY,
-							tileSize, tileSize);
-					//stroke(255, 0, 0);
-					noFill();
-					PVector screenLoc = world2screen(new PVector(t.colBox.x,
-							t.colBox.y));
-					// rect(screenLoc.x, screenLoc.y, tileSize, tileSize);
+					rect((x * tileSize) + offsetX, (y * tileSize) + offsetY, tileSize, tileSize);
+
 				} else {
 
 					fill(t.color);
-					rect((x * tileSize) + offsetX, (y * tileSize) + offsetY,
-							tileSize, tileSize);
-					//stroke(255, 0, 0);
-					noFill();
-					PVector screenLoc = world2screen(new PVector(t.colBox.x,
-							t.colBox.y));
-					// rect(screenLoc.x, screenLoc.y, tileSize, tileSize);
+					rect((x * tileSize) + offsetX, (y * tileSize) + offsetY, tileSize, tileSize);
+
 				}
 
 			}
 		}
 	}
-	public void checkPlayerHit(){
-		for(Projectile pr: e.shots){
-			if(pr.colBox.intersects(p.colBox) && !pr.isHit){
-				pr.isHit=true;
+
+	// CHECK IF THE ENEMY SHOTS HIT THE PLAYER
+	public void checkPlayerHit() {
+		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
+		for (Projectile pr : e.shots) {
+			if (pr.colBox.intersects(p.colBox) && !pr.isHit) {
+				pr.isHit = true;
 				p.hp.Hit(pr.dmg);
+				shotsToRemove.add(pr);
 			}
 		}
+		e.shots.removeAll(shotsToRemove);
 	}
 
+	// CHECK IF THE PLAYER SHOTS HIT THE ENEMY
+	public void checkEnemyHit() {
+		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
+		for (Projectile pr : p.shots) {
+			if (pr.colBox.intersects(e.colBox) && !pr.isHit) {
+				pr.isHit = true;
+				e.hp.Hit(pr.dmg);
+				shotsToRemove.add(pr);
+			}
+		}
+		p.shots.removeAll(shotsToRemove);
+	}
+
+	// DRAW PLAYER PROJECTILES
 	public void drawProjectiles() {
 		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
 		for (Projectile pr : p.shots) {
 
 			if (checkCollision(pr.colBox) != null) {
-				
+
 				shotsToRemove.add(pr);
 			} else {
-				fill(0, 255, 0);
+				fill(160, 32, 240);
 				screenLoc = world2screen(pr.pos);
 				ellipse(screenLoc.x, screenLoc.y, 20, 20);
-				
+
 			}
 
 		}
 		p.shots.removeAll(shotsToRemove);
 	}
 
+	// DRAW ENEMY PROJECTILES
 	public void drawEProjectiles() {
 		for (Projectile pr : e.shots) {
 
-			fill(0, 255, 100);
+			fill(255, 165, 0);
 			screenLoc = world2screen(pr.pos);
-			ellipse(screenLoc.x, screenLoc.y, e.current.shotDiameter,
-					e.current.shotDiameter);
+			ellipse(screenLoc.x, screenLoc.y, e.current.shotDiameter, e.current.shotDiameter);
 		}
 
 	}
 
+	// DRAW THE ENEMY AND HIS HEALTH BAR
 	public void drawEnemy() {
 		PVector screenLoc = world2screen(new PVector(e.colBox.x, e.colBox.y));
-		graphics.noFill();
-		// rect(screenLoc.x, screenLoc.y, p.width, p.height);
+		noFill();
 		fill(255, 0, 0);
 		screenLoc = world2screen(e.pos);
 		ellipse(screenLoc.x, screenLoc.y, e.width, e.height);
+
+		rect(width / 2 - e.hp.green.width / 2, e.hp.green.y - 50, e.hp.green.width, e.hp.green.height);
 	}
 
-	public void drawPlayer() {
-		PVector screenLoc = world2screen(new PVector(p.colBox.x, p.colBox.y));
-		graphics.noFill();
-		// rect(screenLoc.x, screenLoc.y, p.width, p.height);
-		fill(0, 0, 255);
-		screenLoc = world2screen(p.pos);
-		ellipse(screenLoc.x, screenLoc.y, 40, 40);
-		fill(50,205,50);
-		//screenLoc = world2screen(new PVector(p.hp.green.x,p.hp.green.y));
-		rect(width/2-p.hp.green.width/2, p.hp.green.y-50,p.hp.green.width,p.hp.green.height);
-		
-	}
+	// DRAW THE PLAYER AND HIS HEALTH BAR
 
+
+	// HANDLE PLAYER TERRAIN COLLISION
 	public void handleTerrainCollision(Rectangle col) {
-		// Rectangle col = checkCollision(p.colBox);
-		if (p.vel.x > 0) {
-			p.pos.x -= col.getWidth();
-			return;
-		}
-
-		if (p.vel.y > 0) {
-			p.pos.y -= col.getHeight();
-			return;
-		}
-
-		if (p.vel.x < 0) {
-			p.pos.x += col.getWidth();
-			return;
-		}
-
-		if (p.vel.y < 0) {
+		Rectangle collision = checkCollision(p.colBox);
+		if (collision.width>collision.height && p.vel.y<0) {
 			p.pos.y += col.getHeight();
-			return;
+			
+		}else if(collision.width>collision.height && p.vel.y>0){
+			p.pos.y -= col.getHeight();
+			
+		}
+
+		if (collision.height>collision.width && p.vel.x<0) {
+			p.pos.x += col.getWidth();
+			
+		}else if(collision.width>collision.height && p.vel.x>0){
+			p.pos.x -= col.getWidth();
+			
 		}
 	}
 
+	// HELPER FOR RECTANGLE COLLISION TERRAIN
 	public static Rectangle checkCollision(Rectangle boundingBox) {
 		for (ArrayList<Tile> t1 : tiles) {
 			for (Tile t : t1) {
@@ -238,26 +247,42 @@ public final class Client extends PApplet {
 		return null;
 	}
 
-	public PVector world2screen(PVector worldCoord) {
-		PVector offset = PVector.sub(p.pos, new PVector(width / 2, height / 2));
+	// CONVERT WORLD COORDINATES TO FIT IN THE CAMERA
+	public static PVector world2screen(PVector worldCoord) {
+		PVector offset = PVector.sub(p.pos, new PVector(screenWidth / 2, screenHeight / 2));
 		return PVector.sub(worldCoord, offset);
+	}
+
+	// EVERY FRAME HANDLE POTENTIAL SHOOTING
+	public void playerShoot() {
+
+		if (p.firing && System.currentTimeMillis() - lastCheck > 100) {
+
+			float angle = (float) -Math.atan2(mouseX - (width / 2), mouseY - (height / 2)) + PI / 2;
+
+			PVector vel1 = PVector.fromAngle(angle);
+
+			p.shots.add(new Projectile(p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle, 20, 10, 10.0f, 400.0f, this));
+
+			lastCheck = System.currentTimeMillis();
+		}
 	}
 
 	public void setup() {
 		frameRate(60);
 		lastCheck = System.currentTimeMillis();
-		p = new Player(500, 500, 550, 40);
-		e = new Enemy(700, 700, new PVector(0, 0), 60);
+		p = new Player(500, 500, 550, 40, this);
+		e = new Enemy(700, 700, new PVector(0, 0), 60, 2000, this);
+		screenWidth=this.width;
+		screenHeight=this.height;
 
 		for (int x = 0; x < 50; x++) {
 			ArrayList<Tile> row = new ArrayList<Tile>();
 			for (int y = 0; y < 50; y++) {
 				if (random(1) > 0.9) {
-					row.add(new Tile(x * tileSize, y * tileSize, tileSize,
-							tileSize, color(0, 0, 255), true));
+					row.add(new Tile(x * tileSize, y * tileSize, tileSize, tileSize, color(0, 0, 255), true, this));
 				} else {
-					row.add(new Tile(x * tileSize, y * tileSize, tileSize,
-							tileSize, random(255), false));
+					row.add(new Tile(x * tileSize, y * tileSize, tileSize, tileSize, random(255), false, this));
 				}
 
 			}
@@ -303,23 +328,6 @@ public final class Client extends PApplet {
 
 	public void mousePressed() {
 		p.firing = true;
-	}
-
-	public void playerShoot() {
-
-		if (p.firing && System.currentTimeMillis() - lastCheck > 100) {
-
-			float angle = (float) -Math.atan2(mouseX - (width / 2), mouseY
-					- (height / 2))
-					+ PI / 2;
-
-			PVector vel1 = PVector.fromAngle(angle);
-
-			p.shots.add(new Projectile(p.pos.x, p.pos.y, p.pos.x, p.pos.y,
-					vel1, angle, 20, 10, 10.0f, 400.0f));
-
-			lastCheck = System.currentTimeMillis();
-		}
 	}
 
 	public void mouseReleased() {

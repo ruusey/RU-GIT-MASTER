@@ -4,6 +4,7 @@ import java.awt.List;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
+import processing.core.PApplet;
 import processing.core.PVector;
 
 public class Player extends Movement {
@@ -12,8 +13,8 @@ public class Player extends Movement {
 	public boolean firing;
 	ArrayList<Projectile> shots = new ArrayList<Projectile>();
 	public HealthBar hp;
-	public Player(int x, int y, int health, int diameter) {
-		super(x, y, diameter, diameter);
+	public Player(int x, int y, int health, int diameter, PApplet parent) {
+		super(x, y, diameter, diameter, parent);
 		pos = new PVector(x, y);
 		vel = new PVector(0, 0);
 		this.health = health;
@@ -31,6 +32,14 @@ public class Player extends Movement {
 		hp.update();
 		colBox.x = (int) pos.x - colBox.width / 2;
 		colBox.y = (int) pos.y - colBox.height / 2;
+		
+		PVector screenLoc = Client.world2screen(new PVector(colBox.x, colBox.y));
+		parent.noFill();
+		parent.fill(0, 0, 255);
+		screenLoc = Client.world2screen(pos);
+		parent.ellipse(screenLoc.x, screenLoc.y, 40, 40);
+		parent.fill(50, 205, 50);
+		parent.rect(parent.width / 2 - hp.green.width / 2, hp.green.y - 50, hp.green.width, hp.green.height);
 
 	}
 

@@ -8,8 +8,9 @@ public class AttackPattern {
 	int shotDamage;
 	int shotDiameter;
 	float shotSpeed;
+	float range;
 	public AttackPattern(int shotDelay, boolean targetPlayer, int shotsPerFrame, float angleBetweenShots,
-			int shotDamage, int shotDiameter, float shotSpeed) {
+			int shotDamage, int shotDiameter, float shotSpeed, float range) {
 
 		this.shotDelay = shotDelay;
 		this.targetPlayer = targetPlayer;
@@ -18,6 +19,7 @@ public class AttackPattern {
 		this.shotDamage = shotDamage;
 		this.shotDiameter = shotDiameter;
 		this.shotSpeed = shotSpeed;
+		this.range=range;
 	}
 	
 }
