@@ -1,5 +1,6 @@
 package finalproj;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import processing.core.PApplet;
@@ -13,8 +14,8 @@ public class Enemy extends Movement implements Runnable{
 	long lastPatternChange;
 	int changes = 0;
 	public HealthBar hp;
-	public Enemy(float x, float y, PVector vel, int diameter, int health, PApplet parent) {
-		super(x, y, vel, diameter, parent);
+	public Enemy(float x, float y, PVector vel, int diameter, int health, BufferedImage sprite,PApplet parent) {
+		super(x, y, vel, diameter, sprite,parent);
 		attackPattern1();
 		lastFire=System.currentTimeMillis();
 		lastPatternChange=System.currentTimeMillis();
@@ -50,6 +51,19 @@ public class Enemy extends Movement implements Runnable{
 
 	}
 	public void update(){
+		drawPlayer();
+		drawProjectiles();
+	}
+	
+	public void drawProjectiles(){
+		for (Projectile pr : shots) {
+
+			parent.fill(255, 165, 0);
+			PVector screenLoc = Client.world2screen(pr.pos);
+			parent.ellipse(screenLoc.x, screenLoc.y, current.shotDiameter, current.shotDiameter);
+		}
+	}
+	public void drawPlayer(){
 		PVector screenLoc = Client.world2screen(new PVector(colBox.x, colBox.y));
 		parent.noFill();
 		parent.fill(255, 0, 0);
@@ -70,7 +84,7 @@ public class Enemy extends Movement implements Runnable{
 			if(System.currentTimeMillis()-lastFire>450){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
-					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, angle-=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range, parent));
+					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, angle-=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,null, parent));
 				}
 				
 				frame++;
@@ -81,7 +95,7 @@ public class Enemy extends Movement implements Runnable{
 			if(System.currentTimeMillis()-lastFire>450){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
-					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, startAngle+=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range, parent));
+					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, startAngle+=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,null, parent));
 				}
 				
 				frame++;

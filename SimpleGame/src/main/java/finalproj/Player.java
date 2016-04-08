@@ -2,9 +2,11 @@ package finalproj;
 
 import java.awt.List;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.core.PVector;
 
 public class Player extends Movement {
@@ -13,8 +15,8 @@ public class Player extends Movement {
 	public boolean firing;
 	ArrayList<Projectile> shots = new ArrayList<Projectile>();
 	public HealthBar hp;
-	public Player(int x, int y, int health, int diameter, PApplet parent) {
-		super(x, y, diameter, diameter, parent);
+	public Player(int x, int y, int health, int diameter,BufferedImage sprite, PApplet parent) {
+		super(x, y, diameter, diameter, sprite, parent);
 		pos = new PVector(x, y);
 		vel = new PVector(0, 0);
 		this.health = health;
@@ -33,14 +35,39 @@ public class Player extends Movement {
 		colBox.x = (int) pos.x - colBox.width / 2;
 		colBox.y = (int) pos.y - colBox.height / 2;
 		
+		
+		drawPlayer();
+		drawProjectiles();
+		
+
+	}
+	public void drawPlayer(){
 		PVector screenLoc = Client.world2screen(new PVector(colBox.x, colBox.y));
 		parent.noFill();
 		parent.fill(0, 0, 255);
+		PImage toDraw = new PImage(img);
 		screenLoc = Client.world2screen(pos);
-		parent.ellipse(screenLoc.x, screenLoc.y, 40, 40);
+		parent.image(toDraw,screenLoc.x-width, screenLoc.y-height, 64, 64);
 		parent.fill(50, 205, 50);
+		
 		parent.rect(parent.width / 2 - hp.green.width / 2, hp.green.y - 50, hp.green.width, hp.green.height);
+	}
+	public void drawProjectiles(){
+		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
+		for (Projectile pr : shots) {
 
+			if (Client.checkCollision(pr.colBox) != null) {
+
+				shotsToRemove.add(pr);
+			} else {
+				parent.fill(160, 32, 240);
+				PVector screenLoc = Client.world2screen(pr.pos);
+				parent.ellipse(screenLoc.x, screenLoc.y, pr.diameter, pr.diameter);
+
+			}
+
+		}
+		shots.removeAll(shotsToRemove);
 	}
 
 	public void updateX() {
