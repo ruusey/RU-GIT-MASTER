@@ -1,6 +1,5 @@
 package finalproj;
 
-import java.awt.List;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -15,6 +14,8 @@ public class Player extends Movement {
 	public boolean firing;
 	ArrayList<Projectile> shots = new ArrayList<Projectile>();
 	public HealthBar hp;
+	public long lastCheck;
+	public static ArrayList<BufferedImage> animFrames = new ArrayList<BufferedImage>();
 	public Player(int x, int y, int health, int diameter,BufferedImage sprite, PApplet parent) {
 		super(x, y, diameter, diameter, sprite, parent);
 		pos = new PVector(x, y);
@@ -26,8 +27,14 @@ public class Player extends Movement {
 		hp = new HealthBar((int)x1,(int)y1,200,diameter/2, health);
 		colBox = new Rectangle((int) pos.x - (diameter / 2), (int) pos.y
 				- (diameter / 2), diameter, diameter);
+		this.lastCheck=System.currentTimeMillis();
 	}
-
+	public static void setFrames(BufferedImage i1, BufferedImage i2){
+		ArrayList<BufferedImage> newFrames = new ArrayList<BufferedImage>();
+		newFrames.add(i1);
+		newFrames.add(i2);
+		animFrames=newFrames;
+	}
 	public void update() {
 
 		pos.add(vel);
@@ -76,22 +83,6 @@ public class Player extends Movement {
 		shots.removeAll(shotsToRemove);
 	}
 
-	public void updateX() {
-
-		pos.x+=vel.x;
-		colBox.x = (int) pos.x - colBox.width / 2;
-		//colBox.y = (int) pos.y - colBox.height / 2;
-
-	}
-
-	public void updateY() {
-
-		pos.y+=vel.y;
-		//colBox.x = (int) pos.x - colBox.width / 2;
-		colBox.y = (int) pos.y - colBox.height / 2;
-
-	}
-
 	public void updateShots() {
 		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
 		for (Projectile p : shots) {
@@ -103,5 +94,12 @@ public class Player extends Movement {
 			}
 		}
 		shots.removeAll(shotsToRemove);
+	}
+	public void animate(int delta, BufferedImage im1, BufferedImage im2){
+		if(System.currentTimeMillis()-lastCheck>delta){
+			img=im2;
+		}else{
+			img=im1;
+		}
 	}
 }
