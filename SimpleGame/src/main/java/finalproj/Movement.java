@@ -3,6 +3,8 @@ package finalproj;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import org.newdawn.slick.Animation;
+
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -22,6 +24,7 @@ public class Movement {
 		this.height=height;
 		this.parent = parent;
 		this.img=sprite;
+
 	}
 	public Movement(float x, float y, PVector vel,int width, int height, BufferedImage sprite,PApplet parent){
 		pos = new PVector(x,y);
@@ -31,6 +34,7 @@ public class Movement {
 		this.height=height;
 		this.parent = parent;
 		this.img=sprite;
+
 	}
 	//if its a circlular object we must adjust
 	public Movement(float x, float y, PVector vel,int diameter, BufferedImage sprite,PApplet parent){
@@ -41,5 +45,6 @@ public class Movement {
 		this.height=diameter;
 		this.parent = parent;
 		this.img=sprite;
+
 	}
 }

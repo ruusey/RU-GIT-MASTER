@@ -28,6 +28,7 @@ public class Projectile extends Movement {
 		this.range = range;
 		this.diameter = diameter;
 		this.isHit = false;
+		
 	}
 
 	public void update() {

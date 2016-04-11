@@ -18,5 +18,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/downloads/JBox2d-2.0.1/JBox2D 05-08-2008/jbox2d-2.0.1-full.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.core.PVector;
 
 public class Enemy extends Movement implements Runnable{
@@ -58,17 +59,25 @@ public class Enemy extends Movement implements Runnable{
 	public void drawProjectiles(){
 		for (Projectile pr : shots) {
 
-			parent.fill(255, 165, 0);
 			PVector screenLoc = Client.world2screen(pr.pos);
-			parent.ellipse(screenLoc.x, screenLoc.y, current.shotDiameter, current.shotDiameter);
+			PImage toDraw = new PImage(Client.scale(pr.img,32,32));
+			
+			parent.pushMatrix();
+			parent.translate(screenLoc.x, screenLoc.y);
+			parent.rotate(pr.angle+PApplet.PI/4);
+			parent.imageMode(PApplet.CENTER);
+			parent.image(toDraw,0, 0, 32, 32);
+			parent.imageMode(PApplet.CORNER);
+			parent.popMatrix();
 		}
 	}
 	public void drawPlayer(){
 		PVector screenLoc = Client.world2screen(new PVector(colBox.x, colBox.y));
 		parent.noFill();
 		parent.fill(255, 0, 0);
+		PImage toDraw = new PImage(Client.scale(img,64,64));
 		screenLoc = Client.world2screen(pos);
-		parent.ellipse(screenLoc.x, screenLoc.y, width, height);
+		parent.image(toDraw,screenLoc.x-toDraw.width/2, screenLoc.y-toDraw.height/2, 64, 64);
 
 		parent.rect(parent.width / 2 - hp.green.width / 2, hp.green.y - 50, hp.green.width, hp.green.height);
 	}
@@ -78,13 +87,13 @@ public class Enemy extends Movement implements Runnable{
 			float angle = (float) -Math.atan2(Client.p.pos.x - pos.x, Client.p.pos.y
 					- pos.y)+PApplet.PI/2;
 					
-
+			angle+=0.2;
 			PVector vel1 = PVector.fromAngle(angle);
 
 			if(System.currentTimeMillis()-lastFire>450){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
-					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, angle-=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,null, parent));
+					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, angle-=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,Client.sl.getSprite("86.png",11, 6), parent));
 				}
 				
 				frame++;
@@ -95,7 +104,7 @@ public class Enemy extends Movement implements Runnable{
 			if(System.currentTimeMillis()-lastFire>450){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
-					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, startAngle+=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,null, parent));
+					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, startAngle+=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,Client.sl.getSprite("86.png",11, 6), parent));
 				}
 				
 				frame++;
@@ -122,7 +131,7 @@ public class Enemy extends Movement implements Runnable{
 		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
 		for (Projectile p : shots) {
 			if (PVector.dist(p.source, p.pos) > p.range
-					|| Client.checkCollision(p.colBox) != null) {
+					|| Client.checkSimpleCollision(p.colBox) != null) {
 				shotsToRemove.add(p);
 			} else {
 				p.update();

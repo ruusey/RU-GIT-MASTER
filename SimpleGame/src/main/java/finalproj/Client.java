@@ -1,11 +1,15 @@
 package finalproj;
 
 import processing.core.PApplet;
+import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,15 +21,16 @@ import finalproj.Player;
 public final class Client extends PApplet {
 	// OUR LEVEL IN TILES
 	public static ArrayList<ArrayList<Tile>> tiles = new ArrayList<ArrayList<Tile>>();
+	public static ArrayList<ArrayList<Tile>> visibleTiles = new ArrayList<ArrayList<Tile>>();
 	Genson gen = new Genson();
 
 	// THE TILE WIDTH AND HEIGHT
-	int tileSize = 64;
+	int tileSize=8;
 
 	// CAMERA LOCATION
 	int camX;
 	int camY;
-
+	public static PGraphics pg;
 	// GAME ENTITIES
 	public static Enemy e;
 	public static Player p;
@@ -33,18 +38,20 @@ public final class Client extends PApplet {
 	PVector screenLoc;
 	// LAST CHECK FOR WHEN THE CLIENT FIRED
 	long lastCheck;
-
+	int m = 8;
+	
 	static int screenWidth;
 	static int screenHeight;
-
+	
 	public static void main(String[] args) {
 
 		PApplet.main(Client.class.getName());
-
+		
 	}
 
 	public void draw() {
 		background(0);
+
 		if (p != null) {
 
 			int offsetMaxX = tiles.size() * tileSize - width;
@@ -67,7 +74,6 @@ public final class Client extends PApplet {
 			}
 
 			g.translate(-camX, -camY);
-
 			drawTiles();
 			drawMiscTxt();
 			playerShoot();
@@ -84,11 +90,13 @@ public final class Client extends PApplet {
 			e.hp.update();
 
 			// HANDLE COLIISION WITH TILES
-			Rectangle col = checkCollision(p.colBox);
-			if (col != null) {
-				handleTerrainCollision(col);
-			} else {
-				// p.update();
+			for (Rectangle col : checkCollision(p.colBox)) {
+				if (col != null) {
+					handleTerrainCollision(col);
+				} else {
+					// p.update();
+				}
+
 			}
 
 		}
@@ -99,7 +107,7 @@ public final class Client extends PApplet {
 		pushMatrix();
 		fill(255, 100, 0);
 		g.translate(camX, camY);
-		text("Player X:" + p.pos.x + ", Player Y:" + p.pos.y, 20, 20);
+		text("Player X:" + p.pos.x + ", Player Y:" + p.pos.y+ " FPS: "+frameRate, 20, 20);
 		popMatrix();
 	}
 
@@ -132,26 +140,22 @@ public final class Client extends PApplet {
 		if (topGrid < 0 || leftGrid < 0) {
 			System.out.println();
 		}
+		ArrayList<ArrayList<Tile>> all = new ArrayList<ArrayList<Tile>>();
 		for (int y = topGrid; y < bottomGrid; y++) {
+			ArrayList<Tile> row = new ArrayList<Tile>();
 			for (int x = leftGrid; x < rightGrid; x++) {
 				Tile t = tiles.get(x).get(y);
-				if (t.takesCol) {
+				row.add(t);
 
-					fill(0, 255, 0);
-					PImage toDraw = new PImage(t.img);
-					image(toDraw, (x * tileSize) + offsetX, (y * tileSize)
-							+ offsetY, tileSize, tileSize);
-
-				} else {
-					PImage toDraw = new PImage(t.img);
-					fill(t.color);
-					image(toDraw, (x * tileSize) + offsetX, (y * tileSize)
-							+ offsetY, tileSize, tileSize);
-
-				}
+				PImage toDraw = new PImage(scale(t.img,64,64));
+				
+				screenLoc = world2screen(t.pos);
+				image(toDraw, (screenLoc.x) , (screenLoc.y));
 
 			}
+			all.add(row);
 		}
+		visibleTiles = all;
 
 	}
 
@@ -203,8 +207,22 @@ public final class Client extends PApplet {
 	}
 
 	// HELPER FOR RECTANGLE COLLISION TERRAIN
-	public static Rectangle checkCollision(Rectangle boundingBox) {
-		for (ArrayList<Tile> t1 : tiles) {
+	public static ArrayList<Rectangle> checkCollision(Rectangle boundingBox) {
+		ArrayList<Rectangle> collisions = new ArrayList<Rectangle>();
+		for (ArrayList<Tile> t1 : visibleTiles) {
+			for (Tile t : t1) {
+				if (t.takesCol && boundingBox.intersects(t.colBox)) {
+					collisions.add(t.colBox.intersection(p.colBox));
+
+				}
+			}
+		}
+		return collisions;
+	}
+
+	public static Rectangle checkSimpleCollision(Rectangle boundingBox) {
+
+		for (ArrayList<Tile> t1 : visibleTiles) {
 			for (Tile t : t1) {
 				if (t.takesCol && boundingBox.intersects(t.colBox)) {
 					return t.colBox.intersection(p.colBox);
@@ -226,63 +244,63 @@ public final class Client extends PApplet {
 	public void playerShoot() {
 
 		if (p.firing && System.currentTimeMillis() - lastCheck > 100) {
-			
+
 			float angle = (float) -Math.atan2(mouseX - (width / 2), mouseY
-					- (height / 2))+PI/2;
-			float angleABS = Math.abs(angle);
-			if(angleABS>0 && angleABS<PI/4) {
-				
-				
-			}else if(angleABS>=PI/4 && angleABS<=3*PI/4){
-				p.img=sl.getSprite(0, 2);
-			}else if(angleABS>3*PI/4 && angleABS<5*PI/4){
-				p.img=sl.getSprite(4, 1);
-			}else if(angleABS>=5*PI/4){
-				p.img=sl.getSprite(7, 0);
-			}else{
-				p.img=sl.getSprite(6, 2);
+					- (height / 2))
+					+ PI / 2;
+			float angleABS = (angle) - PI / 2;
+			if (angleABS >= -3 * PI / 4 && angleABS <= -PI / 4) {
+
+			} else if (angleABS > -PI / 4 && angleABS <= PI / 4) {
+				//p.img = sl.getSprite(0, 2);
+			} else if (angleABS > PI / 4 && angleABS <= 3 * PI / 4) {
+				//p.img = sl.getSprite(4, 1);
+			} else if (angleABS >= 3 * PI / 4 && angleABS <= PI) {
+				//p.img = sl.getSprite(7, 0);
+			} else {
+				//p.img = sl.getSprite(7, 0);
 			}
 			System.out.println(angleABS);
 			PVector vel1 = PVector.fromAngle(angle);
 
 			p.shots.add(new Projectile(p.pos.x, p.pos.y, p.pos.x, p.pos.y,
-					vel1, angle-0.1f, 10, 10, 10.0f, 400.0f, null, this));
+					vel1, angle - 0.15f, 32, 10, 10.0f, 400.0f, sl.getSprite("86.png", 1, 7), this));
 			p.shots.add(new Projectile(p.pos.x, p.pos.y, p.pos.x, p.pos.y,
-					vel1, angle+0.1f, 10, 10, 10.0f, 400.0f, null, this));
+					vel1, angle + 0.15f, 32, 10, 10.0f, 400.0f, sl.getSprite("86.png", 1, 7), this));
 			p.shots.add(new Projectile(p.pos.x, p.pos.y, p.pos.x, p.pos.y,
-					vel1, angle, 10, 10, 10.0f, 400.0f, null, this));
+					vel1, angle, 32, 10, 10.0f, 400.0f, sl.getSprite("86.png", 1, 7), this));
 
 			lastCheck = System.currentTimeMillis();
 		}
-		//p.img=sl.getSprite(0, 0);
+		// p.img=sl.getSprite(0, 0);
 	}
 
 	public void setup() {
-		//frameRate(60);
-		try {
-			sl = new SpriteLoader(64, 64, 5, 10);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		
+		tileSize*=m;
+		pg = createGraphics(width,height, JAVA2D);
+			sl = new SpriteLoader(64, 64, 5, 10, "src/main/java/images");
+		
 		lastCheck = System.currentTimeMillis();
-		p = new Player(500, 500, 550, 40, sl.getSprite(0, 0), this);
-		e = new Enemy(700, 700, new PVector(0, 0), 60, 2000,
-				sl.getSprite(4, 0), this);
+		p = new Player(500, 500, 550, 64, sl.getSprite("93.png",0, 3), this);
+		e = new Enemy(700, 700, new PVector(0, 0), 64, 2000, sl.getSprite("93.png",0, 0),
+				this);
 		screenWidth = this.width;
 		screenHeight = this.height;
 
-		for (int x = 0; x < 50; x++) {
+		for (int x = 0; x < 100; x++) {
 			ArrayList<Tile> row = new ArrayList<Tile>();
-			for (int y = 0; y < 50; y++) {
+			for (int y = 0; y < 100; y++) {
 				if (random(1) > 0.9) {
-					BufferedImage randomTile = sl.getSprite((int) random(0, 3),
-							4);
+					BufferedImage randomTile = sl.getSprite("147.png",(int) random(0, 5),
+							2);
 
 					row.add(new Tile(x * tileSize, y * tileSize, tileSize,
 							tileSize, color(0, 0, 255), true, randomTile, this));
 				} else {
-					BufferedImage randomTile = sl.getSprite(
-							(int) random(0, 2), 3);
+					BufferedImage randomTile = sl.getSprite("147.png",(int) random(0, 5),
+							0);
+
 					row.add(new Tile(x * tileSize, y * tileSize, tileSize,
 							tileSize, random(255), false, randomTile, this));
 				}
@@ -295,38 +313,39 @@ public final class Client extends PApplet {
 	}
 
 	public void settings() {
-		size(700, 700);
-
+		size(700, 700,JAVA2D);
+		
 	}
 
 	public void keyPressed() {
 		if (key == 'w') {
 
 			p.vel.y = -6;
-			if(p.firing) return;
-			p.img=sl.getSprite(3, 0);
+			if (p.firing)
+				return;
+			p.img = sl.getSprite("93.png",1, 5);
 		} else if (key == 's') {
 			p.vel.y = 6;
-			if(p.firing) return;
-			p.img=sl.getSprite(0, 0);
+			if (p.firing)
+				return;
+			p.img = sl.getSprite("93.png",0, 4);
 		} else if (key == 'a') {
 			p.vel.x = -6;
-			if(p.firing) return;
-			p.img=sl.getSprite(2, 0);
+			if (p.firing)
+				return;
+			p.img = flipHorz(sl.getSprite("93.png",0, 3));
 		} else if (key == 'd') {
 			p.vel.x = 6;
-			if(p.firing) return;
-			p.img=sl.getSprite(1, 0);
-		} else if (key == ' ') {
-			tileSize -= 10;
-		}
-
+			if (p.firing)
+				return;
+			p.img = sl.getSprite("93.png",0, 3);
+		} 
 	}
 
 	public void keyReleased() {
 		if (key == 'w') {
 			p.vel.y = 0;
-			
+
 		} else if (key == 's') {
 			p.vel.y = 0;
 		} else if (key == 'a') {
@@ -338,20 +357,39 @@ public final class Client extends PApplet {
 
 	public void mousePressed() {
 		p.firing = true;
-		if(p.vel.x>0){
-			
-		}else if(p.vel.x<0){
-			
-		}else if(p.vel.y>0){
-			
-		}else if(p.vel.y<0){
-			
+		if (p.vel.x > 0) {
+
+		} else if (p.vel.x < 0) {
+
+		} else if (p.vel.y > 0) {
+
+		} else if (p.vel.y < 0) {
+
 		}
-		
+
 	}
 
 	public void mouseReleased() {
 		p.firing = false;
 	}
+	public static BufferedImage scale(BufferedImage i, int newW, int newH){
+		Image toolkitImage = i.getScaledInstance(newW, newH, 
+			      Image.SCALE_FAST);
+			int width = toolkitImage.getWidth(null);
+			int height = toolkitImage.getHeight(null);
 
+			// width and height are of the toolkit image
+			BufferedImage newImage = new BufferedImage(width, height, 
+			      BufferedImage.TYPE_INT_ARGB);
+			Graphics g = newImage.getGraphics();
+			g.drawImage(toolkitImage, 0, 0, null);
+			g.dispose();
+		return newImage;
+	}
+	public BufferedImage flipHorz(BufferedImage i){
+		AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+		tx.translate(-i.getWidth(null), 0);
+		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+		return op.filter((BufferedImage) i, null);
+	}
 }

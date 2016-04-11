@@ -45,25 +45,31 @@ public class Player extends Movement {
 		PVector screenLoc = Client.world2screen(new PVector(colBox.x, colBox.y));
 		parent.noFill();
 		parent.fill(0, 0, 255);
-		PImage toDraw = new PImage(img);
-		screenLoc = Client.world2screen(pos);
-		parent.image(toDraw,screenLoc.x-width, screenLoc.y-height, 64, 64);
-		parent.fill(50, 205, 50);
 		
-		parent.rect(parent.width / 2 - hp.green.width / 2, hp.green.y - 50, hp.green.width, hp.green.height);
+		PImage toDraw = new PImage(Client.scale(img,64,64));
+		screenLoc = Client.world2screen(pos);
+		parent.image(toDraw,screenLoc.x-toDraw.width/2, screenLoc.y-toDraw.height/2, 64, 64);
+		
+		parent.rect(parent.width / 2 - hp.green.width / 2, hp.green.y - 50, hp.green.width, hp.green.height/2);
 	}
 	public void drawProjectiles(){
 		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
 		for (Projectile pr : shots) {
 
-			if (Client.checkCollision(pr.colBox) != null) {
+			if (Client.checkSimpleCollision(pr.colBox)!=null) {
 
 				shotsToRemove.add(pr);
 			} else {
-				parent.fill(160, 32, 240);
 				PVector screenLoc = Client.world2screen(pr.pos);
-				parent.ellipse(screenLoc.x, screenLoc.y, pr.diameter, pr.diameter);
-
+				PImage toDraw = new PImage(Client.scale(pr.img,32,32));
+				
+				parent.pushMatrix();
+				parent.translate(screenLoc.x, screenLoc.y);
+				parent.rotate(pr.angle+PApplet.PI/4);
+				parent.imageMode(PApplet.CENTER);
+				parent.image(toDraw,0, 0, 32, 32);
+				parent.imageMode(PApplet.CORNER);
+				parent.popMatrix();
 			}
 
 		}
@@ -90,7 +96,7 @@ public class Player extends Movement {
 		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
 		for (Projectile p : shots) {
 			if (PVector.dist(p.source, p.pos) > p.range
-					|| Client.checkCollision(p.colBox) != null) {
+					|| Client.checkSimpleCollision(p.colBox) != null) {
 				shotsToRemove.add(p);
 			} else {
 				p.update();
