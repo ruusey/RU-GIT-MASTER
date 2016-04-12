@@ -21,6 +21,7 @@ public class Item {
 		this.attBonus = attBonus;
 		this.defBonus = defBonus;
 		this.dexBonus = dexBonus;
+		this.name=name;
 	}
 	
 

@@ -57,7 +57,7 @@ public class Player extends Movement {
 		screenLoc = Client.world2screen(pos);
 		parent.image(toDraw,screenLoc.x-toDraw.width/2, screenLoc.y-toDraw.height/2, 64, 64);
 		
-		parent.rect(parent.width / 2 - hp.green.width / 2, hp.green.y - 50, hp.green.width, hp.green.height/2);
+		parent.rect(parent.width / 2-100 - hp.green.width / 2, hp.green.y - 50, hp.green.width, hp.green.height/2);
 	}
 	public void drawProjectiles(){
 		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();

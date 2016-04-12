@@ -22,7 +22,8 @@ public final class Client extends PApplet {
 	// OUR LEVEL IN TILES
 	public static ArrayList<ArrayList<Tile>> tiles = new ArrayList<ArrayList<Tile>>();
 	public static ArrayList<ArrayList<Tile>> visibleTiles = new ArrayList<ArrayList<Tile>>();
-
+	public static ArrayList<Item> items = new ArrayList<Item>();
+	
 	// THE TILE WIDTH AND HEIGHT
 	int tileSize = 64;
 
@@ -34,7 +35,7 @@ public final class Client extends PApplet {
 	public static Enemy e;
 	public static Player p;
 	public static SpriteLoader sl;
-	
+	public static GUI gui;
 	public PVector screenLoc;
 
 	// LAST CHECK FOR WHEN THE CLIENT FIRED
@@ -71,7 +72,7 @@ public final class Client extends PApplet {
 			e.attack();
 			e.updateShots();
 			e.hp.update();
-
+			gui.update();
 			// HANDLE COLIISION WITH TILES
 			for (Rectangle col : checkCollision(p.colBox)) {
 				if (col != null) {
@@ -215,7 +216,7 @@ public final class Client extends PApplet {
 
 	// CONVERT WORLD COORDINATES TO FIT IN THE CAMERA
 	public static PVector world2screen(PVector worldCoord) {
-		PVector offset = PVector.sub(p.pos, new PVector(screenWidth / 2, screenHeight / 2));
+		PVector offset = PVector.sub(p.pos, new PVector((screenWidth / 2)-100, screenHeight / 2));
 		return PVector.sub(worldCoord, offset);
 	}
 
@@ -223,8 +224,8 @@ public final class Client extends PApplet {
 	public void playerShoot() {
 
 		if (p.firing && System.currentTimeMillis() - lastCheck > 100) {
-
-			float angle = (float) -Math.atan2(mouseX - (width / 2), mouseY - (height / 2)) + PI / 2;
+			screenLoc = world2screen(p.pos);
+			float angle = (float) -Math.atan2(mouseX - (screenLoc.x), mouseY - (screenLoc.y)) + PI / 2;
 			float angleABS = (angle) - PI / 2;
 			if (angleABS >= -3 * PI / 4 && angleABS <= -PI / 4) {
 				p.img = sl.getSprite("93.png", 0, 5);
@@ -262,7 +263,7 @@ public final class Client extends PApplet {
 		sl = new SpriteLoader(64, 64, 5, 10, "src/main/java/images");
 		p = new Player(500, 500, 550, 64, sl.getSprite("93.png", 0, 3), this);
 		e = new Enemy(700, 700, new PVector(0, 0), 64, 2000, sl.getSprite("93.png", 0, 0), this);
-		
+		gui = new GUI(p.health,p.health,new PVector(width-200,0),200,height,this);
 		
 		screenWidth = this.width;
 		screenHeight = this.height;
@@ -291,7 +292,7 @@ public final class Client extends PApplet {
 	}
 
 	public void settings() {
-		size(700, 700, JAVA2D);
+		size(800, 700, JAVA2D);
 
 	}
 
@@ -367,5 +368,12 @@ public final class Client extends PApplet {
 		tx.translate(-i.getWidth(null), 0);
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 		return op.filter((BufferedImage) i, null);
+	}
+	public void loadItems(){
+		for(int x = 0; x< 10; x++){
+			for(int y = 0 ; y<10; y++){
+				
+			}
+		}
 	}
 }
