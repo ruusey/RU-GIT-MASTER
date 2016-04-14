@@ -23,7 +23,7 @@ public final class Client extends PApplet {
 	public static ArrayList<ArrayList<Tile>> tiles = new ArrayList<ArrayList<Tile>>();
 	public static ArrayList<ArrayList<Tile>> visibleTiles = new ArrayList<ArrayList<Tile>>();
 	// ALL ITEMS IN THE GAME (WIP)
-	public static ArrayList<Item> items = new ArrayList<Item>();
+	public static ArrayList<Entity> gameObject = new ArrayList<Entity>();
 	// ALL ENEMIES AND VISIBLE ENEMIES
 	public static ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	public static ArrayList<Enemy> visibleEnemies = new ArrayList<Enemy>();
@@ -102,6 +102,7 @@ public final class Client extends PApplet {
 			PVector index = indexInTiles(getTile(p.pos));
 			System.out.println("Tile X: " + index.x + " Tile Y: " + index.y);
 			// HANDLE COLIISION WITH TILES
+			
 			ArrayList<Rectangle> collisions = checkCollision(p.colBox);
 			if (collisions != null) {
 				for (Rectangle col : collisions) {
@@ -194,7 +195,7 @@ public final class Client extends PApplet {
 		ArrayList<Tile> testTiles = getAdjacentTiles(getTile(p.pos));
 		if(testTiles==null)return;
 		for (Projectile pr : e.shots) {
-			if (testTiles.contains(e.tile)) {
+			if (testTiles.contains(pr.tile)) {
 				if (pr.colBox.intersects(p.colBox) && !pr.isHit) {
 					pr.isHit = true;
 					p.hp.Hit(pr.dmg);
@@ -442,9 +443,7 @@ public final class Client extends PApplet {
 		if (x > 0 && y > 0) {
 			res.add(tiles.get(x).get(y));
 
-		} else {
-			return null;
-		}
+		} 
 		if (x + 1 < tiles.size())
 			res.add(tiles.get(x + 1).get(y));
 		if (x - 1 > -1)
