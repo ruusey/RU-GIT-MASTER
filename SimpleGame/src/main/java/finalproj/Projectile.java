@@ -7,7 +7,7 @@ import java.sql.Time;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-public class Projectile extends Movement {
+public class Projectile extends Entity {
 
 	int dmg;
 	PVector source;
@@ -36,7 +36,7 @@ public class Projectile extends Movement {
 		PVector up = PVector.fromAngle(angle);
 		up.setMag(mag);
 		pos.add(up);
-		// angle+=0.01;
+		tile = Client.getTile(pos);
 		colBox.x = (int) pos.x - colBox.width / 2;
 		colBox.y = (int) pos.y - colBox.height / 2;
 

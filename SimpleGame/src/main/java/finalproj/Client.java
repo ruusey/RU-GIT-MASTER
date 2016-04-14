@@ -22,10 +22,14 @@ public final class Client extends PApplet {
 	// OUR LEVEL IN TILES
 	public static ArrayList<ArrayList<Tile>> tiles = new ArrayList<ArrayList<Tile>>();
 	public static ArrayList<ArrayList<Tile>> visibleTiles = new ArrayList<ArrayList<Tile>>();
+	// ALL ITEMS IN THE GAME (WIP)
 	public static ArrayList<Item> items = new ArrayList<Item>();
-	
+	// ALL ENEMIES AND VISIBLE ENEMIES
+	public static ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+	public static ArrayList<Enemy> visibleEnemies = new ArrayList<Enemy>();
+	public static ArrayList<Lootbag> loot = new ArrayList<Lootbag>();
 	// THE TILE WIDTH AND HEIGHT
-	int tileSize = 64;
+	static int tileSize = 64;
 
 	// CAMERA LOCATION
 	int camX;
@@ -36,6 +40,8 @@ public final class Client extends PApplet {
 	public static Player p;
 	public static SpriteLoader sl;
 	public static GUI gui;
+
+	// HELPER FOR POSITIONING ELEMENTS
 	public PVector screenLoc;
 
 	// LAST CHECK FOR WHEN THE CLIENT FIRED
@@ -44,6 +50,7 @@ public final class Client extends PApplet {
 	// MAGNIFICATION OF GAME OBJECTS
 	int m = 1;
 
+	// FOR WORLD2SCREEN FUNCTIONALITY
 	static int screenWidth;
 	static int screenHeight;
 
@@ -59,32 +66,57 @@ public final class Client extends PApplet {
 		if (p != null) {
 
 			drawTiles();
+			
 			drawMiscTxt();
 			playerShoot();
-			checkPlayerHit();
-			checkEnemyHit();
+			
+			ArrayList<Enemy> toRemove = new ArrayList<Enemy>();
+			for (Enemy enemy : enemies) {
 
+				if (tilesContains(enemy.tile, visibleTiles)) {
+					if (enemy.hp.actualHealth < 1) {
+						toRemove.add(enemy);
+					} else {
+						enemy.update();
+						enemy.attack();
+						enemy.updateShots();
+						enemy.hp.update();
+						checkPlayerHit(enemy);
+						checkEnemyHit(enemy);
+					}
+
+				}
+
+			}
+			for (Enemy e : toRemove) {
+				e.death();
+			}
 			p.update();
 			p.updateShots();
 			p.hp.update();
 
-			e.update();
-			e.attack();
-			e.updateShots();
-			e.hp.update();
 			gui.update();
+			drawLoot();
+			
+			
+			PVector index = indexInTiles(getTile(p.pos));
+			System.out.println("Tile X: " + index.x + " Tile Y: " + index.y);
 			// HANDLE COLIISION WITH TILES
-			for (Rectangle col : checkCollision(p.colBox)) {
-				if (col != null) {
-					handleTerrainCollision(col);
-				}
+			ArrayList<Rectangle> collisions = checkCollision(p.colBox);
+			if (collisions != null) {
+				for (Rectangle col : collisions) {
+					if (col != null) {
+						p.handleTerrainCollision(col);
+					}
 
+				}
 			}
 
 		}
 
 	}
-	//DRAW MISC TEXT
+
+	// DRAW MISC TEXT
 	public void drawMiscTxt() {
 		pushMatrix();
 		fill(255, 100, 0);
@@ -92,14 +124,26 @@ public final class Client extends PApplet {
 		text("Player X:" + p.pos.x + ", Player Y:" + p.pos.y + " FPS: " + frameRate, 20, 20);
 		popMatrix();
 	}
-	//DRAW THE MAP TILES
+	public void drawLoot(){
+		if(loot.size()==0)return;
+		for(Lootbag bag: loot){
+			if(bag.tile.posIn(p.pos)){
+				for(Item i: bag.contents){
+					if(i==null)continue;
+					BufferedImage img = i.sprite;
+					PImage toDraw = new PImage(scale(img,32,32));
+					
+					image(toDraw,gui.pos.x, gui.pos.y+gui.height/2, 32, 32);
+				}
+			
+			}
+			PImage toDraw = new PImage(Client.scale(bag.img,32,32));
+			PVector screenLoc = Client.world2screen(bag.pos);
+			image(toDraw,screenLoc.x-toDraw.width/2, screenLoc.y-toDraw.height/2, 32, 32);
+		}
+	}
+	// DRAW THE MAP TILES
 	public void drawTiles() {
-		int mapWidth = tiles.size() * tileSize;
-		int mapHeight = tiles.get(0).size() * tileSize;
-
-		int offsetX = width / 2 - Math.round(p.pos.x);
-
-		int offsetY = height / 2 - Math.round(p.pos.y);
 
 		int heroGridX = ((int) p.pos.x / tileSize);
 		int heroGridY = ((int) p.pos.y / tileSize);
@@ -127,7 +171,7 @@ public final class Client extends PApplet {
 			ArrayList<Tile> row = new ArrayList<Tile>();
 			for (int x = leftGrid; x < rightGrid; x++) {
 				Tile t = tiles.get(x).get(y);
-				row.add(t);
+				row.add(tiles.get(x).get(y));
 
 				PImage toDraw = new PImage(scale(t.img, 64, 64));
 
@@ -142,73 +186,74 @@ public final class Client extends PApplet {
 	}
 
 	// CHECK IF THE ENEMY SHOTS HIT THE PLAYER
-	public void checkPlayerHit() {
+	// WILL MOVE TO PLAYER CLASS WHEN ADDING LIST ENEMIES
+	public void checkPlayerHit(Enemy e) {
+		if (e == null || e.shots.size() == 0)
+			return;
 		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
+		ArrayList<Tile> testTiles = getAdjacentTiles(getTile(p.pos));
+		if(testTiles==null)return;
 		for (Projectile pr : e.shots) {
-			if (pr.colBox.intersects(p.colBox) && !pr.isHit) {
-				pr.isHit = true;
-				p.hp.Hit(pr.dmg);
-				shotsToRemove.add(pr);
+			if (testTiles.contains(e.tile)) {
+				if (pr.colBox.intersects(p.colBox) && !pr.isHit) {
+					pr.isHit = true;
+					p.hp.Hit(pr.dmg);
+					shotsToRemove.add(pr);
+				}
 			}
+
 		}
 		e.shots.removeAll(shotsToRemove);
 	}
 
 	// CHECK IF THE PLAYER SHOTS HIT THE ENEMY
-	public void checkEnemyHit() {
+	// MOVE TO ENEMY CLASS WHEN VISIBLE PLAYERS LIST
+	public void checkEnemyHit(Enemy e) {
+		if (e == null)
+			return;
 		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
+		ArrayList<Tile> testTiles = getAdjacentTiles(getTile(e.pos));
+		if(testTiles==null)return;
 		for (Projectile pr : p.shots) {
-			if (pr.colBox.intersects(e.colBox) && !pr.isHit) {
-				pr.isHit = true;
-				e.hp.Hit(pr.dmg);
-				shotsToRemove.add(pr);
+			
+			if (testTiles.contains(pr.tile)) {
+				if (pr.colBox.intersects(e.colBox) && !pr.isHit) {
+					pr.isHit = true;
+					e.hp.Hit(pr.dmg);
+					shotsToRemove.add(pr);
+				}
 			}
+
 		}
 		p.shots.removeAll(shotsToRemove);
 	}
 
-	// HANDLE PLAYER TERRAIN COLLISION
-	public void handleTerrainCollision(Rectangle col) {
-		if (col.width > col.height && p.vel.y < 0) {
-			p.pos.y += col.getHeight();
-
-		}
-		if (col.width > col.height && p.vel.y > 0) {
-			p.pos.y -= col.getHeight();
-
-		}
-		if (col.height > col.width && p.vel.x < 0) {
-			p.pos.x += col.getWidth();
-
-		}
-		if (col.height > col.width && p.vel.x > 0) {
-			p.pos.x -= col.getWidth();
-
-		}
-	}
-
 	// HELPER FOR RECTANGLE COLLISION WITH MAP TERRAIN
+	// MOVING TO PLAYER CLASS WHEN ADDED VISIBLE ENTITIES
 	public static ArrayList<Rectangle> checkCollision(Rectangle boundingBox) {
 		ArrayList<Rectangle> collisions = new ArrayList<Rectangle>();
-		for (ArrayList<Tile> t1 : visibleTiles) {
-			for (Tile t : t1) {
-				if (t.takesCol && boundingBox.intersects(t.colBox)) {
-					collisions.add(t.colBox.intersection(p.colBox));
+		ArrayList<Tile> testTiles = getAdjacentTiles(getTile(p.pos));
+		if (testTiles == null)
+			return null;
+		for (Tile t : testTiles) {
+			if (t.takesCol && boundingBox.intersects(t.colBox)) {
+				collisions.add(t.colBox.intersection(p.colBox));
 
-				}
 			}
 		}
 		return collisions;
 	}
-	//HANDLE A SIMPLE COLLISION AABB
+
+	// HANDLE A SIMPLE COLLISION AABB
+	// SAVES TIME WHEN NOT CHECKING FOR PLAYER TERRAIN COLLISION
 	public static Rectangle checkSimpleCollision(Rectangle boundingBox) {
+		ArrayList<Tile> testTiles = getAdjacentTiles(getTile(new PVector(boundingBox.x, boundingBox.y)));
+		if (testTiles == null)
+			return null;
+		for (Tile t : testTiles) {
+			if (t.takesCol && boundingBox.intersects(t.colBox)) {
+				return t.colBox.intersection(p.colBox);
 
-		for (ArrayList<Tile> t1 : visibleTiles) {
-			for (Tile t : t1) {
-				if (t.takesCol && boundingBox.intersects(t.colBox)) {
-					return t.colBox.intersection(p.colBox);
-
-				}
 			}
 		}
 		return null;
@@ -216,7 +261,7 @@ public final class Client extends PApplet {
 
 	// CONVERT WORLD COORDINATES TO FIT IN THE CAMERA
 	public static PVector world2screen(PVector worldCoord) {
-		PVector offset = PVector.sub(p.pos, new PVector((screenWidth / 2)-100, screenHeight / 2));
+		PVector offset = PVector.sub(p.pos, new PVector((screenWidth / 2) - 100, screenHeight / 2));
 		return PVector.sub(worldCoord, offset);
 	}
 
@@ -238,15 +283,15 @@ public final class Client extends PApplet {
 			} else {
 				p.img = sl.getSprite("93.png", 0, 5);
 			}
-			//ADD PROJECTILES
+			// ADD PROJECTILES
 			PVector vel1 = PVector.fromAngle(angle);
 
 			p.shots.add(new Projectile(p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle - 0.15f, 32, 10, 10.0f, 400.0f,
-					sl.getSprite("86.png", 1, 7), this));
+					sl.getSprite("86.png", 7, 3), this));
 			p.shots.add(new Projectile(p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle + 0.15f, 32, 10, 10.0f, 400.0f,
-					sl.getSprite("86.png", 1, 7), this));
+					sl.getSprite("86.png", 7, 3), this));
 			p.shots.add(new Projectile(p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle, 32, 10, 10.0f, 400.0f,
-					sl.getSprite("86.png", 1, 7), this));
+					sl.getSprite("86.png", 7, 3), this));
 
 			lastCheck = System.currentTimeMillis();
 		}
@@ -255,20 +300,11 @@ public final class Client extends PApplet {
 
 	public void setup() {
 
+		// MAKE THE TILE SIZE MAGNIFIED
 		tileSize *= m;
-		
-		lastCheck = System.currentTimeMillis();
-		
-		//LOAD SPRITES IN DIRECTORY
+
 		sl = new SpriteLoader(64, 64, 5, 10, "src/main/java/images");
-		p = new Player(500, 500, 550, 64, sl.getSprite("93.png", 0, 3), this);
-		e = new Enemy(700, 700, new PVector(0, 0), 64, 2000, sl.getSprite("93.png", 0, 0), this);
-		gui = new GUI(p.health,p.health,new PVector(width-200,0),200,height,this);
-		
-		screenWidth = this.width;
-		screenHeight = this.height;
-		
-		//CONSTRUCT TILE MAP
+		// CONSTRUCT TILE MAP
 		for (int x = 0; x < 100; x++) {
 			ArrayList<Tile> row = new ArrayList<Tile>();
 			for (int y = 0; y < 100; y++) {
@@ -288,6 +324,24 @@ public final class Client extends PApplet {
 			tiles.add(row);
 
 		}
+		// FOR SHOOTING TIMING
+		lastCheck = System.currentTimeMillis();
+
+		// LOAD SPRITES IN DIRECTORY
+
+		p = new Player(500, 500, 550, 50, sl.getSprite("93.png", 0, 3), this);
+
+		for (int i = 0; i < 5; i++) {
+			Enemy en = new Enemy(random(1000), random(1000), new PVector(0, 0), 64, 200, sl.getSprite("93.png", 0, 0),
+					this);
+			enemies.add(en);
+		}
+		// NEW GUI (WIP)
+		gui = new GUI(p.health, p.health, new PVector(width - 200, 0), 200, height, this);
+
+		// STATIC VAR FOR WIDTH AND HEIGHT
+		screenWidth = this.width;
+		screenHeight = this.height;
 
 	}
 
@@ -350,7 +404,8 @@ public final class Client extends PApplet {
 	public void mouseReleased() {
 		p.firing = false;
 	}
-	//CONVERT TO BUFFERD IMAGE AND PRESERVER ARGB TRANSPARENCY
+
+	// CONVERT TO BUFFERD IMAGE AND PRESERVER ARGB TRANSPARENCY
 	public static BufferedImage scale(BufferedImage i, int newW, int newH) {
 		Image toolkitImage = i.getScaledInstance(newW, newH, Image.SCALE_FAST);
 		int width = toolkitImage.getWidth(null);
@@ -362,18 +417,75 @@ public final class Client extends PApplet {
 		g.dispose();
 		return newImage;
 	}
-	//FLIP A BUFFEREDIMAGE OVER ITS HORIZONTAL AXIS
+
+	// FLIP A BUFFEREDIMAGE OVER ITS HORIZONTAL AXIS
 	public BufferedImage flipHorz(BufferedImage i) {
 		AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
 		tx.translate(-i.getWidth(null), 0);
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 		return op.filter((BufferedImage) i, null);
 	}
-	public void loadItems(){
-		for(int x = 0; x< 10; x++){
-			for(int y = 0 ; y<10; y++){
-				
+
+	public static Tile getTile(PVector pos) {
+		if (pos.x < 0 || pos.y < 0)
+			return null;
+		return tiles.get((int) (pos.x / tileSize)).get((int) (pos.y / tileSize));
+
+	}
+
+	public static ArrayList<Tile> getAdjacentTiles(Tile t) {
+		ArrayList<Tile> res = new ArrayList<Tile>();
+		PVector indexT = indexInTiles(t);
+		int x = (int) indexT.x;
+		int y = (int) indexT.y;
+
+		if (x > 0 && y > 0) {
+			res.add(tiles.get(x).get(y));
+
+		} else {
+			return null;
+		}
+		if (x + 1 < tiles.size())
+			res.add(tiles.get(x + 1).get(y));
+		if (x - 1 > -1)
+			res.add(tiles.get(x - 1).get(y));
+		if (y + 1 < tiles.size())
+			res.add(tiles.get(x).get(y + 1));
+		if (y - 1 > -1)
+			res.add(tiles.get(x).get(y - 1));
+		if (x + 1 < tiles.size() && y + 1 < tiles.size())
+			res.add(tiles.get(x + 1).get(y + 1));
+		if (x - 1 > -1 && y - 1 > -1)
+			res.add(tiles.get(x - 1).get(y - 1));
+		if (x - 1 > -1 && y + 1 < tiles.size())
+			res.add(tiles.get(x - 1).get(y + 1));
+		if (x + 1 < tiles.size() && y - 1 > -1)
+			res.add(tiles.get(x + 1).get(y - 1));
+
+		return res;
+
+	}
+
+	public static PVector indexInTiles(Tile t) {
+		int x = 0, y = 0;
+		for (ArrayList<Tile> t1 : tiles) {
+			if (t1.contains(t)) {
+				x = tiles.indexOf(t1);
+				y = t1.indexOf(t);
+			}
+
+		}
+		return new PVector(x, y);
+	}
+
+	public boolean tilesContains(Tile t, ArrayList<ArrayList<Tile>> toTest) {
+		for (ArrayList<Tile> t1 : toTest) {
+			for (Tile t2 : t1) {
+				if (t2.equals(t))
+					return true;
 			}
 		}
+		return false;
 	}
+
 }

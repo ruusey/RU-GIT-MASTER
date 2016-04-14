@@ -8,7 +8,7 @@ import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Player extends Movement {
+public class Player extends Entity {
 
 	public int health;
 	public boolean firing;
@@ -41,7 +41,7 @@ public class Player extends Movement {
 		hp.update();
 		colBox.x = (int) pos.x - colBox.width / 2;
 		colBox.y = (int) pos.y - colBox.height / 2;
-		
+		tile = Client.getTile(pos);
 		
 		drawPlayer();
 		drawProjectiles();
@@ -100,6 +100,24 @@ public class Player extends Movement {
 			img=im2;
 		}else{
 			img=im1;
+		}
+	}
+	public void handleTerrainCollision(Rectangle col) {
+		if (col.width > col.height && vel.y < 0) {
+			pos.y += col.getHeight();
+
+		}
+		if (col.width > col.height && vel.y > 0) {
+			pos.y -= col.getHeight();
+
+		}
+		if (col.height > col.width && vel.x < 0) {
+			pos.x += col.getWidth();
+
+		}
+		if (col.height > col.width && vel.x > 0) {
+			pos.x -= col.getWidth();
+
 		}
 	}
 }

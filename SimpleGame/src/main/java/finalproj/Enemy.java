@@ -1,5 +1,6 @@
 package finalproj;
 
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -7,7 +8,7 @@ import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Enemy extends Movement implements Runnable{
+public class Enemy extends Entity implements Lootable{
 	public ArrayList<Projectile> shots = new ArrayList<Projectile>();
 	public AttackPattern current;
 	int frame;
@@ -30,7 +31,7 @@ public class Enemy extends Movement implements Runnable{
 		float angleBetweenShots = 0.1f;
 		int shotDamage = 60;
 		int shotDiameter = 40;
-		float shotSpeed = 8;
+		float shotSpeed = 4;
 		float range = 400.0f;
 		current = new AttackPattern(shotDelay, targetPlayer,shotsPerFrame,angleBetweenShots,shotDamage,shotDiameter,shotSpeed,range);
 		
@@ -43,7 +44,7 @@ public class Enemy extends Movement implements Runnable{
 		float angleBetweenShots = 0.5f;
 		int shotDamage = 60;
 		int shotDiameter = 40;
-		float shotSpeed = 8;
+		float shotSpeed = 6;
 		float range = 400.0f;
 		current = new AttackPattern(shotDelay, targetPlayer,shotsPerFrame,angleBetweenShots,shotDamage,shotDiameter,shotSpeed,range);
 	}
@@ -54,6 +55,8 @@ public class Enemy extends Movement implements Runnable{
 	public void update(){
 		drawPlayer();
 		drawProjectiles();
+		tile = Client.getTile(pos);
+		
 	}
 	
 	public void drawProjectiles(){
@@ -79,7 +82,7 @@ public class Enemy extends Movement implements Runnable{
 		screenLoc = Client.world2screen(pos);
 		parent.image(toDraw,screenLoc.x-toDraw.width/2, screenLoc.y-toDraw.height/2, 64, 64);
 
-		parent.rect(parent.width / 2 - hp.green.width / 2, hp.green.y - 50, hp.green.width, hp.green.height);
+		parent.rect(screenLoc.x - hp.green.width / 2, screenLoc.y - 50, hp.green.width, hp.green.height/2);
 	}
 	public void attack(){
 		
@@ -93,7 +96,7 @@ public class Enemy extends Movement implements Runnable{
 			if(System.currentTimeMillis()-lastFire>450){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
-					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, angle-=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,Client.sl.getSprite("86.png",11, 6), parent));
+					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, angle-=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,Client.sl.getSprite("86.png",6, 4), parent));
 				}
 				
 				frame++;
@@ -104,7 +107,7 @@ public class Enemy extends Movement implements Runnable{
 			if(System.currentTimeMillis()-lastFire>450){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
-					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, startAngle+=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,Client.sl.getSprite("86.png",11, 6), parent));
+					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, startAngle+=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,Client.sl.getSprite("86.png",13, 0), parent));
 				}
 				
 				frame++;
@@ -137,12 +140,46 @@ public class Enemy extends Movement implements Runnable{
 				p.update();
 			}
 		}
+		
 		shots.removeAll(shotsToRemove);
 	}
 
-	public void run() {
+	public void handleTerrainCollision(Rectangle col) {
+		if (col.width > col.height && vel.y < 0) {
+			pos.y += col.getHeight();
+
+		}
+		if (col.width > col.height && vel.y > 0) {
+			pos.y -= col.getHeight();
+
+		}
+		if (col.height > col.width && vel.x < 0) {
+			pos.x += col.getWidth();
+
+		}
+		if (col.height > col.width && vel.x > 0) {
+			pos.x -= col.getWidth();
+
+		}
+	}
+
+	public void death() {
 		
+		Client.enemies.remove(this);
 		
+		calculateDrops();
+		
+	}
+
+	public void calculateDrops() {
+		Lootbag loot = new Lootbag(pos.x,pos.y,32,32,Client.sl.getSprite("135.png", 2, 9), parent);
+		loot.contents[0]=new Item(Client.sl.getSprite("97.png", 4, 0), "Coral Bow", 0, 0, 0, 0, 0, 0);
+		Client.loot.add(loot);
+		
+	}
+
+	public void dropLoot() {
+		// TODO Auto-generated method stub
 		
 	}
 }
