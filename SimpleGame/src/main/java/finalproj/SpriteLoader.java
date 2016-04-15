@@ -1,18 +1,11 @@
 package finalproj;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
-
-import processing.core.PApplet;
-import processing.core.PImage;
 
 public class SpriteLoader{
 	static BufferedImage spriteSheet;

@@ -1,9 +1,5 @@
 package finalproj;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.sql.Time;
-
 import XMLObjects.ProjectileObject;
 import processing.core.PApplet;
 import processing.core.PVector;

@@ -1,7 +1,6 @@
 package finalproj;
 
 import processing.core.PApplet;
-import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
@@ -11,14 +10,11 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import XMLObjects.PlayerObject;
 import XMLObjects.ProjectileObject;
 import XMLObjects.WeaponObject;
-
-import com.owlike.genson.Genson;
 
 import finalproj.Player;
 

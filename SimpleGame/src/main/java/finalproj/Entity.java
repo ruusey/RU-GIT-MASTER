@@ -1,10 +1,6 @@
 package finalproj;
 
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-
-import org.newdawn.slick.Animation;
-
 import processing.core.PApplet;
 import processing.core.PVector;
 

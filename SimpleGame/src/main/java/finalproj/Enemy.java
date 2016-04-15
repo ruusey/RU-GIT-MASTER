@@ -92,7 +92,7 @@ public class Enemy extends Entity implements Lootable{
 					- pos.y)+PApplet.PI/2;
 					
 			angle+=0.2;
-			PVector vel1 = PVector.fromAngle(angle);
+			//PVector vel1 = PVector.fromAngle(angle);
 
 			if(System.currentTimeMillis()-lastFire>450){
 				for(int x = 0; x<current.shotsPerFrame;x++){
