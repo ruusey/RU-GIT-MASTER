@@ -1,0 +1,233 @@
+package finalproj;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+
+import XMLObjects.ContainerObject;
+import XMLObjects.GameObject;
+import XMLObjects.PlayerObject;
+import XMLObjects.ProjectileObject;
+import XMLObjects.WallObject;
+import XMLObjects.WeaponObject;
+
+import com.owlike.genson.Genson;
+
+public class XMLParse {
+	public static Hashtable<String,WeaponObject> weapons = new Hashtable<String,WeaponObject>();
+	public static Hashtable<String,ProjectileObject> projectiles = new Hashtable<String,ProjectileObject>();
+	public static Hashtable<String,ContainerObject> containers = new Hashtable<String,ContainerObject>();
+	public static Hashtable<String,GameObject> gameObjects = new Hashtable<String,GameObject>();
+	public static Hashtable<String,WallObject> walls = new Hashtable<String,WallObject>();
+	public static Hashtable<String,PlayerObject> players = new Hashtable<String,PlayerObject>();
+	public XMLParse(String path){
+		load(path);
+	}
+	public static void load(String path) {
+		
+		SAXBuilder builder = new SAXBuilder();
+		File xmlFile = new File(path);
+
+		try {
+
+			Document document = (Document) builder.build(xmlFile);
+			Element rootNode = document.getRootElement();
+			List<Element> list = rootNode.getChildren("Object");
+
+			for (int i = 0; i < list.size(); i++) {
+
+				Element node = (Element) list.get(i);
+				String clas = node.getChildText("Class");
+				if (clas.equals("Equipment")) {
+					parseItem(node);
+				}else if(clas.equals("Projectile")){
+					parseProjectile(node);
+				}else if(clas.equals("Container")){
+					parseContainer(node);
+				}else if(clas.equals("Wall")){
+					parseWall(node);
+				}else if(clas.equals("GameObject")){
+					parseGameObject(node);
+				}else if(clas.equals("Player")){
+					parsePlayer(node);
+				}
+
+			}
+			System.out.println("done");
+
+		} catch (IOException io) {
+			System.out.println(io.getMessage());
+		} catch (JDOMException jdomex) {
+			System.out.println(jdomex.getMessage());
+		}
+	}
+
+	public static void parseItem(Element node) {
+		Genson gen = new Genson();
+		Element textureMap = node.getChild("Texture");
+		String name = node.getAttributeValue("id");
+		int id = Integer.parseInt(node.getAttributeValue("type"));
+		String file = textureMap.getChildText("File");
+		int x = Integer.parseInt(textureMap.getChildText("X"));
+		int y = Integer.parseInt(textureMap.getChildText("Y"));
+
+		int numProjectiles = Integer.parseInt(node
+				.getChildText("NumProjectiles"));
+
+		Element projectile = node.getChild("Projectile");
+		String namePro = projectile.getChildText("ObjectId");
+		int speed = Integer.parseInt(projectile.getChildText("Speed"));
+		int min = Integer.parseInt(projectile.getChildText("MinDamage"));
+		int max = Integer.parseInt(projectile.getChildText("MaxDamage"));
+		double range = Double.parseDouble(projectile.getChildText("Range"));
+		boolean multiHit = (projectile.getChildText("MultiHit")) != null;
+		double rof = Double.parseDouble(node.getChildText("RateOfFire"));
+
+		Texture tex = new Texture(file, x, y);
+		WeaponObject w = new WeaponObject(name, id, tex, rof, namePro, speed,
+				min, max, numProjectiles, range, multiHit);
+		System.out.println(gen.serialize(w));
+		weapons.put(name,w);
+
+	}
+	public static void parseProjectile(Element node) {
+		Genson gen = new Genson();
+		Element textureMap = node.getChild("Texture");
+		String name = node.getAttributeValue("id");
+		int id = Integer.parseInt(node.getAttributeValue("type"));
+		String file = textureMap.getChildText("File");
+		int x = Integer.parseInt(textureMap.getChildText("X"));
+		int y = Integer.parseInt(textureMap.getChildText("Y"));
+		int corrAngle = Integer.parseInt(node.getChildText("AngleCorrection"));
+		int size = Integer.parseInt(node.getChildText("Size"));
+		
+		
+		Texture tex = new Texture(file, x, y);
+		ProjectileObject pr = new ProjectileObject(name,id,tex,corrAngle, size);
+		System.out.println(gen.serialize(pr));
+		projectiles.put(name, pr);
+
+	}
+	public static void parseContainer(Element node){
+		Element textureMap = node.getChild("Texture");
+		String name = node.getAttributeValue("id");
+		int id = Integer.parseInt(node.getAttributeValue("type"));
+		String file = textureMap.getChildText("File");
+		int x = Integer.parseInt(textureMap.getChildText("X"));
+		int y = Integer.parseInt(textureMap.getChildText("Y"));
+		boolean normalItems = (node.getChildText("CanPutNormalObjects")) != null;
+		boolean loot = (node.getChildText("Loot")) != null;
+		Texture tex = new Texture(file, x, y);
+		ContainerObject c = new ContainerObject(name, id, tex, normalItems, loot);
+		containers.put(name, c);
+	}
+	public static void parseGameObject(Element node){
+		Element textureMap = node.getChild("Texture");
+		String name = node.getAttributeValue("id");
+		int id = Integer.parseInt(node.getAttributeValue("type"));
+		String file = textureMap.getChildText("File");
+		int x = Integer.parseInt(textureMap.getChildText("X"));
+		int y = Integer.parseInt(textureMap.getChildText("Y"));
+		boolean drawOnGround = (node.getChildText("DrawOnGround")) != null;
+		boolean moveable = (node.getChildText("Static")) != null;
+		Texture tex = new Texture(file, x, y);
+		GameObject g = new GameObject(name,id,tex,drawOnGround,moveable);
+		gameObjects.put(name, g);
+		
+	}
+	public static void parseWall(Element node){
+		Element textureMap = node.getChild("Texture");
+		String name = node.getAttributeValue("id");
+		int id = Integer.parseInt(node.getAttributeValue("type"));
+		String file = textureMap.getChildText("File");
+		int x = Integer.parseInt(textureMap.getChildText("X"));
+		int y = Integer.parseInt(textureMap.getChildText("Y"));
+			Element topWallElement = node.getChild("Top");
+				Element texTop = topWallElement.getChild("Texture");
+				String fileTop = texTop.getChildText("File");
+				int xTop = Integer.parseInt(texTop.getChildText("X"));
+				int yTop = Integer.parseInt(texTop.getChildText("Y"));
+		Texture top = new Texture(fileTop,xTop,yTop);
+		Texture tex = new Texture(file, x, y);
+		WallObject w = new WallObject(name,id,tex,top);
+		walls.put(name, w);
+	}
+	public static void parsePlayer(Element node){
+		Element textureMap = node.getChild("Texture");
+		String name = node.getAttributeValue("id");
+		int id = Integer.parseInt(node.getAttributeValue("type"));
+		String file = textureMap.getChildText("File");
+		int x = Integer.parseInt(textureMap.getChildText("X"));
+		int y = Integer.parseInt(textureMap.getChildText("Y"));
+		Texture tex = new Texture(file, x, y);
+		int maxHp, hp, maxAtt,att,
+		maxDef, def, maxSpeed, spd, maxDex, dex,
+		maxVit, vit;
+		int[] slots = new int[12];
+		int[] equip = new int[12];
+		String slotString = node.getChildText("SlotTypes");
+		
+		String[] splits = slotString.split(",");
+		for(int i = 0 ; i<splits.length;i++){
+			String s = splits[i];
+			slots[i]=Integer.parseInt(s);
+		}
+		String equipString = node.getChildText("Equipment");
+		
+		splits = equipString.split(",");
+		for(int i = 0 ; i<splits.length;i++){
+			String s = splits[i];
+			equip[i]=Integer.parseInt(s);
+		}
+		Element childNode = node.getChild("Hp");
+		maxHp=Integer.parseInt(childNode.getAttributeValue("max"));
+		hp=Integer.parseInt(childNode.getText());
+		childNode = node.getChild("Attack");
+		maxAtt=Integer.parseInt(childNode.getAttributeValue("max"));
+		att=Integer.parseInt(childNode.getText());
+		childNode = node.getChild("Defense");
+		maxDef=Integer.parseInt(childNode.getAttributeValue("max"));
+		def=Integer.parseInt(childNode.getText());
+		childNode = node.getChild("Speed");
+		maxSpeed=Integer.parseInt(childNode.getAttributeValue("max"));
+		spd=Integer.parseInt(childNode.getText());
+		childNode = node.getChild("Dexterity");
+		maxDex=Integer.parseInt(childNode.getAttributeValue("max"));
+		dex=Integer.parseInt(childNode.getText());
+		childNode = node.getChild("Vitality");
+		maxVit=Integer.parseInt(childNode.getAttributeValue("max"));
+		vit=Integer.parseInt(childNode.getText());
+		PlayerObject p = new PlayerObject(name,id,tex,slots,equip,maxHp, hp, maxAtt,att,
+				maxDef, def, maxSpeed, spd, maxDex, dex,
+				maxVit, vit);
+		Genson gen = new Genson();
+		System.out.println(gen.serialize(p));
+		players.put(name, p);
+	}
+	
+	public ProjectileObject getProjectileObject(String name){
+		return projectiles.get(name);
+	}
+	public WeaponObject getWeapon(String name){
+		return weapons.get(name);
+	}
+	public ContainerObject getContainer(String name){
+		return containers.get(name);
+	}
+	public GameObject getGameObject(String name){
+		return gameObjects.get(name);
+	}
+	public WallObject getWallObject(String name){
+		return walls.get(name);
+	}
+	public PlayerObject getPlayerObject(String name){
+		return players.get(name);
+	}
+}

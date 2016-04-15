@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Objects>
+	<Object type="1" id="Coral Bow">
+		<Class>Equipment</Class>
+		<Item />
+		<Texture>
+			<File>97.png</File>
+			<X>4</X>
+			<Y>0</Y>
+		</Texture>
+
+		<RateOfFire>1.25</RateOfFire>
+		<Projectile>
+			<ObjectId>Coral Arrow</ObjectId>
+			<Speed>10</Speed>
+			<MinDamage>60</MinDamage>
+			<MaxDamage>80</MaxDamage>
+			<Range>400</Range>
+			<MultiHit />
+		</Projectile>
+		<NumProjectiles>2</NumProjectiles>
+	</Object>
+
+	<Object type="2" id="Coral Arrow">
+		<Class>Projectile</Class>
+		<Texture>
+			<File>86.png</File>
+			<X>7</X>
+			<Y>3</Y>
+		</Texture>
+		<AngleCorrection>1</AngleCorrection>
+		<Size>10</Size>
+	</Object>
+	<Object type="3" id="Archer">
+		<Class>Player</Class>
+		<Texture>
+			<File>93.png</File>
+			<X>0</X>
+			<Y>3</Y>
+		</Texture>
+
+		<Player />
+		<BloodProb>1.0</BloodProb>
+		<SlotTypes>3,15,6,9,0,0,0,0,0,0,0,0</SlotTypes>
+		<Equipment>12,2,-1,-1,12,-1,-1,-1,-1,-1,-1,-1</Equipment>
+		<Hp max="700">130</Hp>
+		<Attack max="75">12</Attack>
+		<Defense max="25">0</Defense>
+		<Speed max="50">12</Speed>
+		<Dexterity max="50">12</Dexterity>
+		<Vitality max="40">12</Vitality>
+		
+	</Object>
+	<Object type="4" id="Loot Bag">
+		<Class>Container</Class>
+		<Container/>
+		<CanPutNormalObjects />
+		<Loot />
+		<Texture>
+			<File>97.png</File>
+			<X>4</X>
+			<Y>0</Y>
+		</Texture>
+	</Object>
+	<Object type="5" id="Wall1">
+		<Class>GameObject</Class>
+		<Texture>
+			<File>97.png</File>
+			<X>9</X>
+			<Y>9</Y>
+		</Texture>
+		<DrawOnGround />
+		<Static />
+	</Object>
+	<Object type="6" id="Wall2">
+		<Class>GameObject</Class>
+		<Texture>
+			<File>101.png</File>
+			<X>12</X>
+			<Y>0</Y>
+		</Texture>
+		<DrawOnGround />
+		<Static />
+	</Object>
+	
+</Objects>

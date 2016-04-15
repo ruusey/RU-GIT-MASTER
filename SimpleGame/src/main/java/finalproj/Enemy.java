@@ -9,15 +9,15 @@ import processing.core.PImage;
 import processing.core.PVector;
 
 public class Enemy extends Entity implements Lootable{
-	public ArrayList<Projectile> shots = new ArrayList<Projectile>();
+	public ArrayList<Shot> shots = new ArrayList<Shot>();
 	public AttackPattern current;
 	int frame;
 	long lastFire;
 	long lastPatternChange;
 	int changes = 0;
 	public HealthBar hp;
-	public Enemy(float x, float y, PVector vel, int diameter, int health, BufferedImage sprite,PApplet parent) {
-		super(x, y, vel, diameter, sprite,parent);
+	public Enemy(String name, int id,Texture t,float x, float y, PVector vel, int diameter, int health,PApplet parent) {
+		super(name,id,t,x, y, vel, diameter,parent);
 		attackPattern1();
 		lastFire=System.currentTimeMillis();
 		lastPatternChange=System.currentTimeMillis();
@@ -60,10 +60,10 @@ public class Enemy extends Entity implements Lootable{
 	}
 	
 	public void drawProjectiles(){
-		for (Projectile pr : shots) {
-
+		for (Shot pr : shots) {
+			BufferedImage image = Client.sl.getSprite(pr.tex);
 			PVector screenLoc = Client.world2screen(pr.pos);
-			PImage toDraw = new PImage(Client.scale(pr.img,32,32));
+			PImage toDraw = new PImage(Client.scale(image,32,32));
 			
 			parent.pushMatrix();
 			parent.translate(screenLoc.x, screenLoc.y);
@@ -78,7 +78,8 @@ public class Enemy extends Entity implements Lootable{
 		PVector screenLoc = Client.world2screen(new PVector(colBox.x, colBox.y));
 		parent.noFill();
 		parent.fill(255, 0, 0);
-		PImage toDraw = new PImage(Client.scale(img,64,64));
+		BufferedImage image = Client.sl.getSprite(tex);
+		PImage toDraw = new PImage(Client.scale(image,64,64));
 		screenLoc = Client.world2screen(pos);
 		parent.image(toDraw,screenLoc.x-toDraw.width/2, screenLoc.y-toDraw.height/2, 64, 64);
 
@@ -96,7 +97,7 @@ public class Enemy extends Entity implements Lootable{
 			if(System.currentTimeMillis()-lastFire>450){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
-					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, angle-=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,Client.sl.getSprite("86.png",6, 4), parent));
+					shots.add(new Shot(Client.loader.getProjectileObject("Coral Arrow"),pos.x,pos.y,pos.x,pos.y, null, angle-=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range, parent));
 				}
 				
 				frame++;
@@ -107,7 +108,7 @@ public class Enemy extends Entity implements Lootable{
 			if(System.currentTimeMillis()-lastFire>450){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
-					shots.add(new Projectile(pos.x,pos.y,pos.x,pos.y, null, startAngle+=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range,Client.sl.getSprite("86.png",13, 0), parent));
+					shots.add(new Shot(Client.loader.getProjectileObject("Coral Arrow"),pos.x,pos.y,pos.x,pos.y, null, startAngle+=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range, parent));
 				}
 				
 				frame++;
@@ -131,8 +132,8 @@ public class Enemy extends Entity implements Lootable{
 	}
 	
 	public void updateShots() {
-		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
-		for (Projectile p : shots) {
+		ArrayList<Shot> shotsToRemove = new ArrayList<Shot>();
+		for (Shot p : shots) {
 			if (PVector.dist(p.source, p.pos) > p.range
 					|| Client.checkSimpleCollision(p.colBox) != null) {
 				shotsToRemove.add(p);
@@ -172,8 +173,9 @@ public class Enemy extends Entity implements Lootable{
 	}
 
 	public void calculateDrops() {
-		Lootbag loot = new Lootbag(pos.x,pos.y,32,32,Client.sl.getSprite("135.png", 2, 9), parent);
-		loot.contents[0]=new Item(Client.sl.getSprite("97.png", 4, 0), "Coral Bow", 0, 0, 0, 0, 0, 0);
+		Texture lootTexture = new Texture("135.png", 2, 9);
+		Lootbag loot = new Lootbag("test",1,lootTexture,pos.x,pos.y,32,32, parent);
+		loot.contents[0]=Client.loader.weapons.get("Coral Bow");
 		Client.loot.add(loot);
 		
 	}

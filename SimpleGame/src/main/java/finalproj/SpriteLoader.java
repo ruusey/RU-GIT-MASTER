@@ -40,6 +40,11 @@ public class SpriteLoader{
 		return spritesMap.get(key).getSubimage(xGrid * TILE_SIZE,
 				yGrid * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 	}
+	public BufferedImage getSprite(Texture tex) {
+
+		return spritesMap.get(tex.fileName).getSubimage(tex.x * TILE_SIZE,
+				tex.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+	}
 
 	public void loadSprites(String path) {
 		File[] files = new File(path).listFiles();

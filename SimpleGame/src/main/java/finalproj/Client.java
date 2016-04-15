@@ -14,6 +14,10 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import XMLObjects.PlayerObject;
+import XMLObjects.ProjectileObject;
+import XMLObjects.WeaponObject;
+
 import com.owlike.genson.Genson;
 
 import finalproj.Player;
@@ -40,6 +44,7 @@ public final class Client extends PApplet {
 	public static Player p;
 	public static SpriteLoader sl;
 	public static GUI gui;
+	public static XMLParse loader;
 
 	// HELPER FOR POSITIONING ELEMENTS
 	public PVector screenLoc;
@@ -120,6 +125,7 @@ public final class Client extends PApplet {
 	// DRAW MISC TEXT
 	public void drawMiscTxt() {
 		pushMatrix();
+		textSize(10);
 		fill(255, 100, 0);
 		g.translate(camX, camY);
 		text("Player X:" + p.pos.x + ", Player Y:" + p.pos.y + " FPS: " + frameRate, 20, 20);
@@ -131,14 +137,15 @@ public final class Client extends PApplet {
 			if(bag.tile.posIn(p.pos)){
 				for(Item i: bag.contents){
 					if(i==null)continue;
-					BufferedImage img = i.sprite;
-					PImage toDraw = new PImage(scale(img,32,32));
+					BufferedImage image = Client.sl.getSprite(i.tex);
+					PImage toDraw = new PImage(scale(image,32,32));
 					
 					image(toDraw,gui.pos.x, gui.pos.y+gui.height/2, 32, 32);
 				}
 			
 			}
-			PImage toDraw = new PImage(Client.scale(bag.img,32,32));
+			BufferedImage image = Client.sl.getSprite(bag.tex);
+			PImage toDraw = new PImage(Client.scale(image,32,32));
 			PVector screenLoc = Client.world2screen(bag.pos);
 			image(toDraw,screenLoc.x-toDraw.width/2, screenLoc.y-toDraw.height/2, 32, 32);
 		}
@@ -173,11 +180,15 @@ public final class Client extends PApplet {
 			for (int x = leftGrid; x < rightGrid; x++) {
 				Tile t = tiles.get(x).get(y);
 				row.add(tiles.get(x).get(y));
-
-				PImage toDraw = new PImage(scale(t.img, 64, 64));
+				BufferedImage image = Client.sl.getSprite(t.tex);
+				
+				PImage toDraw = new PImage(scale(image, 64, 64));
 
 				screenLoc = world2screen(t.pos);
-				image(toDraw, (screenLoc.x), (screenLoc.y));
+				
+					image(toDraw, (screenLoc.x), (screenLoc.y));
+				
+				
 
 			}
 			all.add(row);
@@ -191,10 +202,10 @@ public final class Client extends PApplet {
 	public void checkPlayerHit(Enemy e) {
 		if (e == null || e.shots.size() == 0)
 			return;
-		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
+		ArrayList<Shot> shotsToRemove = new ArrayList<Shot>();
 		ArrayList<Tile> testTiles = getAdjacentTiles(getTile(p.pos));
 		if(testTiles==null)return;
-		for (Projectile pr : e.shots) {
+		for (Shot pr : e.shots) {
 			if (testTiles.contains(pr.tile)) {
 				if (pr.colBox.intersects(p.colBox) && !pr.isHit) {
 					pr.isHit = true;
@@ -212,15 +223,20 @@ public final class Client extends PApplet {
 	public void checkEnemyHit(Enemy e) {
 		if (e == null)
 			return;
-		ArrayList<Projectile> shotsToRemove = new ArrayList<Projectile>();
+		ArrayList<Shot> shotsToRemove = new ArrayList<Shot>();
 		ArrayList<Tile> testTiles = getAdjacentTiles(getTile(e.pos));
 		if(testTiles==null)return;
-		for (Projectile pr : p.shots) {
+		for (Shot pr : p.shots) {
 			
 			if (testTiles.contains(pr.tile)) {
 				if (pr.colBox.intersects(e.colBox) && !pr.isHit) {
 					pr.isHit = true;
 					e.hp.Hit(pr.dmg);
+					screenLoc = world2screen(e.pos);
+					fill(0,255,0);
+					textSize(30);
+					text(pr.dmg,screenLoc.x,screenLoc.y-32);
+					
 					shotsToRemove.add(pr);
 				}
 			}
@@ -274,25 +290,25 @@ public final class Client extends PApplet {
 			float angle = (float) -Math.atan2(mouseX - (screenLoc.x), mouseY - (screenLoc.y)) + PI / 2;
 			float angleABS = (angle) - PI / 2;
 			if (angleABS >= -3 * PI / 4 && angleABS <= -PI / 4) {
-				p.img = sl.getSprite("93.png", 0, 5);
+				//p.img = sl.getSprite("93.png", 0, 5);
 			} else if (angleABS > -PI / 4 && angleABS <= PI / 4) {
-				p.img = sl.getSprite("93.png", 0, 4);
+				//p.img = sl.getSprite("93.png", 0, 4);
 			} else if (angleABS > PI / 4 && angleABS <= 3 * PI / 4) {
-				p.img = flipHorz(sl.getSprite("93.png", 0, 3));
+				//p.img = flipHorz(sl.getSprite("93.png", 0, 3));
 			} else if (angleABS >= 3 * PI / 4 && angleABS <= PI) {
-				p.img = sl.getSprite("93.png", 0, 3);
+				//p.img = sl.getSprite("93.png", 0, 3);
 			} else {
-				p.img = sl.getSprite("93.png", 0, 5);
+				//p.img = sl.getSprite("93.png", 0, 5);
 			}
 			// ADD PROJECTILES
 			PVector vel1 = PVector.fromAngle(angle);
-
-			p.shots.add(new Projectile(p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle - 0.15f, 32, 10, 10.0f, 400.0f,
-					sl.getSprite("86.png", 7, 3), this));
-			p.shots.add(new Projectile(p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle + 0.15f, 32, 10, 10.0f, 400.0f,
-					sl.getSprite("86.png", 7, 3), this));
-			p.shots.add(new Projectile(p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle, 32, 10, 10.0f, 400.0f,
-					sl.getSprite("86.png", 7, 3), this));
+			WeaponObject equipped = p.w;
+			ProjectileObject toShoot = loader.getProjectileObject(p.w.projectile);
+			float mult = (float) (0.5 + p.p.att / 50.0f);
+			float damage = random(equipped.minDmg,equipped.maxDmg) * mult;
+			p.shots.add(new Shot(toShoot,p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle, toShoot.size, (int) damage, equipped.speed, 400.0f,
+					this));
+			
 
 			lastCheck = System.currentTimeMillis();
 		}
@@ -302,6 +318,7 @@ public final class Client extends PApplet {
 	public void setup() {
 
 		// MAKE THE TILE SIZE MAGNIFIED
+		loader = new XMLParse("src/main/java/xml/items.xml");
 		tileSize *= m;
 
 		sl = new SpriteLoader(64, 64, 5, 10, "src/main/java/images");
@@ -310,14 +327,14 @@ public final class Client extends PApplet {
 			ArrayList<Tile> row = new ArrayList<Tile>();
 			for (int y = 0; y < 100; y++) {
 				if (random(1) > 0.9) {
-					BufferedImage randomTile = sl.getSprite("147.png", (int) random(0, 5), 2);
-
-					row.add(new Tile(x * tileSize, y * tileSize, tileSize, tileSize, color(0, 0, 255), true, randomTile,
+					
+					
+					row.add(new Tile(loader.getGameObject("Wall2"),x * tileSize, y * tileSize, tileSize, tileSize, color(0, 0, 255), true,
 							this));
 				} else {
-					BufferedImage randomTile = sl.getSprite("147.png", (int) random(0, 5), 0);
-
-					row.add(new Tile(x * tileSize, y * tileSize, tileSize, tileSize, random(255), false, randomTile,
+					
+		
+					row.add(new Tile(loader.getGameObject("Wall1"),x * tileSize, y * tileSize, tileSize, tileSize, random(255), false,
 							this));
 				}
 
@@ -329,16 +346,16 @@ public final class Client extends PApplet {
 		lastCheck = System.currentTimeMillis();
 
 		// LOAD SPRITES IN DIRECTORY
-
-		p = new Player(500, 500, 550, 50, sl.getSprite("93.png", 0, 3), this);
+		PlayerObject pl = loader.getPlayerObject("Archer");
+		p = new Player(pl,500,500,64, this);
 
 		for (int i = 0; i < 5; i++) {
-			Enemy en = new Enemy(random(1000), random(1000), new PVector(0, 0), 64, 200, sl.getSprite("93.png", 0, 0),
-					this);
+			Texture enemyTex = new Texture("93.png", 0, 0);
+			Enemy en = new Enemy("test",12,enemyTex,random(1000), random(1000), new PVector(0, 0), 64, 200, this);
 			enemies.add(en);
 		}
 		// NEW GUI (WIP)
-		gui = new GUI(p.health, p.health, new PVector(width - 200, 0), 200, height, this);
+		gui = new GUI(p.p.hp, p.p.hp, new PVector(width - 200, 0), 200, height, this);
 
 		// STATIC VAR FOR WIDTH AND HEIGHT
 		screenWidth = this.width;
@@ -347,7 +364,7 @@ public final class Client extends PApplet {
 	}
 
 	public void settings() {
-		size(800, 700, JAVA2D);
+		size(800, 700);
 
 	}
 
@@ -356,22 +373,22 @@ public final class Client extends PApplet {
 			p.vel.y = -6;
 			if (p.firing)
 				return;
-			p.img = sl.getSprite("93.png", 0, 5);
+			//p.tex = sl.getSprite("93.png", 0, 5);
 		} else if (key == 's') {
 			p.vel.y = 6;
 			if (p.firing)
 				return;
-			p.img = sl.getSprite("93.png", 0, 4);
+			//p.img = sl.getSprite("93.png", 0, 4);
 		} else if (key == 'a') {
 			p.vel.x = -6;
 			if (p.firing)
 				return;
-			p.img = flipHorz(sl.getSprite("93.png", 0, 3));
+			//p.img = flipHorz(sl.getSprite("93.png", 0, 3));
 		} else if (key == 'd') {
 			p.vel.x = 6;
 			if (p.firing)
 				return;
-			p.img = sl.getSprite("93.png", 0, 3);
+			//p.img = sl.getSprite("93.png", 0, 3);
 		}
 	}
 
