@@ -12,6 +12,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import XMLObjects.EnemyObject;
 import XMLObjects.PlayerObject;
 import XMLObjects.ProjectileObject;
 import XMLObjects.WeaponObject;
@@ -54,7 +55,7 @@ public final class Client extends PApplet {
 	// FOR WORLD2SCREEN FUNCTIONALITY
 	static int screenWidth;
 	static int screenHeight;
-
+	
 	public static void main(String[] args) {
 
 		PApplet.main(Client.class.getName());
@@ -62,10 +63,10 @@ public final class Client extends PApplet {
 	}
 
 	public void draw() {
+		
 		background(0);
-
 		if (p != null) {
-
+			
 			drawTiles();
 			
 			drawMiscTxt();
@@ -78,9 +79,9 @@ public final class Client extends PApplet {
 					if (enemy.hp.actualHealth < 1) {
 						toRemove.add(enemy);
 					} else {
-						enemy.update();
+						enemy.update(frameRate);
 						enemy.attack();
-						enemy.updateShots();
+						enemy.updateShots(frameRate);
 						enemy.hp.update();
 						checkPlayerHit(enemy);
 						checkEnemyHit(enemy);
@@ -92,16 +93,14 @@ public final class Client extends PApplet {
 			for (Enemy e : toRemove) {
 				e.death();
 			}
-			p.update();
-			p.updateShots();
+			p.update(frameRate);
+			p.updateShots(frameRate);
 			p.hp.update();
 
-			gui.update();
+			gui.update(p);
 			drawLoot();
-			
-			
 			PVector index = indexInTiles(getTile(p.pos));
-			System.out.println("Tile X: " + index.x + " Tile Y: " + index.y);
+			//System.out.println("Tile X: " + index.x + " Tile Y: " + index.y);
 			// HANDLE COLIISION WITH TILES
 			
 			ArrayList<Rectangle> collisions = checkCollision(p.colBox);
@@ -115,6 +114,8 @@ public final class Client extends PApplet {
 			}
 
 		}
+		
+		
 
 	}
 
@@ -281,7 +282,7 @@ public final class Client extends PApplet {
 	// EVERY FRAME HANDLE POTENTIAL SHOOTING
 	public void playerShoot() {
 
-		if (p.firing && System.currentTimeMillis() - lastCheck > 100) {
+		if (p.firing && System.currentTimeMillis() - lastCheck > 100/p.w.rateOfFire) {
 			screenLoc = world2screen(p.pos);
 			float angle = (float) -Math.atan2(mouseX - (screenLoc.x), mouseY - (screenLoc.y)) + PI / 2;
 			float angleABS = (angle) - PI / 2;
@@ -302,7 +303,9 @@ public final class Client extends PApplet {
 			ProjectileObject toShoot = loader.getProjectileObject(p.w.projectile);
 			float mult = (float) (0.5 + p.p.att / 50.0f);
 			float damage = random(equipped.minDmg,equipped.maxDmg) * mult;
-			p.shots.add(new Shot(toShoot,p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle, toShoot.size, (int) damage, equipped.speed, 400.0f,
+			p.shots.add(new Shot(toShoot,p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle-0.1f, toShoot.size, (int) damage, equipped.speed, (float) equipped.range,
+					this));
+			p.shots.add(new Shot(toShoot,p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle+0.1f, toShoot.size, (int) damage, equipped.speed, (float) equipped.range,
 					this));
 			
 
@@ -346,8 +349,8 @@ public final class Client extends PApplet {
 		p = new Player(pl,500,500,64, this);
 
 		for (int i = 0; i < 5; i++) {
-			Texture enemyTex = new Texture("93.png", 0, 0);
-			Enemy en = new Enemy("test",12,enemyTex,random(1000), random(1000), new PVector(0, 0), 64, 200, this);
+			EnemyObject eo = loader.getEnemyObject("Enemy1");
+			Enemy en = new Enemy(eo,random(1000), random(1000), new PVector(0, 0), 64, this);
 			enemies.add(en);
 		}
 		// NEW GUI (WIP)

@@ -9,25 +9,28 @@ public class HealthBar {
 	public int height;
 	public Rectangle green;
 	public Rectangle red;
+
 	public HealthBar(int x, int y, int width, int height, int health) {
-		this.width=width;
-		this.height=height;
+		this.width = width;
+		this.height = height;
 		actualHealth = health;
-		maxHealth=health;
-		green = new Rectangle(x,y,width,height);
-	}
-	public void Hit(int damage) {
-	    actualHealth -= damage;
-	}
-	public void update(){
-		float unit = actualHealth*1.0f/maxHealth*1.0f;
-		if(actualHealth<0){
-			actualHealth=0;
-		}
-		
-		green.width = (int) (unit * width);
-		//red.width = (visibleHealth / 100) * width;
+		maxHealth = health;
+		green = new Rectangle(x, y, width, height);
 	}
 
-	
+	public void Hit(int damage) {
+		actualHealth -= damage;
+		if (actualHealth < 0) actualHealth = 0;
+	}
+
+	public void update() {
+		float unit = actualHealth * 1.0f / maxHealth * 1.0f;
+		if (actualHealth < 0) {
+			actualHealth = 0;
+		}
+
+		green.width = (int) (unit * width);
+		// red.width = (visibleHealth / 100) * width;
+	}
+
 }

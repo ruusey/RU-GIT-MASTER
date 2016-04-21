@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import XMLObjects.EnemyObject;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
@@ -16,43 +17,16 @@ public class Enemy extends Entity implements Lootable{
 	long lastPatternChange;
 	int changes = 0;
 	public HealthBar hp;
-	public Enemy(String name, int id,Texture t,float x, float y, PVector vel, int diameter, int health,PApplet parent) {
-		super(name,id,t,x, y, vel, diameter,parent);
-		attackPattern1();
+	public EnemyObject en;
+	public Enemy(EnemyObject en,float x, float y, PVector vel, int diameter,PApplet parent) {
+		super(en.name,en.id,en.tex,x, y, vel, diameter,parent);
+		current=en.patterns.get(0);
 		lastFire=System.currentTimeMillis();
 		lastPatternChange=System.currentTimeMillis();
-		hp = new HealthBar((int)pos.x,(int)pos.y,200,diameter/2, health);
+		hp = new HealthBar((int)pos.x,(int)pos.y,200,diameter/2, en.hp);
 	}
 
-	public void attackPattern1() {
-		int shotDelay = 100;
-		boolean targetPlayer = true;
-		int shotsPerFrame = 4;
-		float angleBetweenShots = 0.1f;
-		int shotDamage = 60;
-		int shotDiameter = 40;
-		float shotSpeed = 4;
-		float range = 400.0f;
-		current = new AttackPattern(shotDelay, targetPlayer,shotsPerFrame,angleBetweenShots,shotDamage,shotDiameter,shotSpeed,range);
-		
-	}
-
-	public void attackPattern2() {
-		int shotDelay = 80;
-		boolean targetPlayer = false;
-		int shotsPerFrame = 12;
-		float angleBetweenShots = 0.5f;
-		int shotDamage = 60;
-		int shotDiameter = 40;
-		float shotSpeed = 6;
-		float range = 400.0f;
-		current = new AttackPattern(shotDelay, targetPlayer,shotsPerFrame,angleBetweenShots,shotDamage,shotDiameter,shotSpeed,range);
-	}
-
-	public void attackPattern3() {
-
-	}
-	public void update(){
+	public void update(float dt){
 		drawPlayer();
 		drawProjectiles();
 		tile = Client.getTile(pos);
@@ -97,7 +71,7 @@ public class Enemy extends Entity implements Lootable{
 			if(System.currentTimeMillis()-lastFire>450){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
-					shots.add(new Shot(Client.loader.getProjectileObject("Coral Arrow"),pos.x,pos.y,pos.x,pos.y, null, angle-=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range, parent));
+					shots.add(new Shot(Client.loader.getProjectileObject(current.projectileName),pos.x,pos.y,pos.x,pos.y, null, angle-=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range, parent));
 				}
 				
 				frame++;
@@ -108,7 +82,7 @@ public class Enemy extends Entity implements Lootable{
 			if(System.currentTimeMillis()-lastFire>450){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
-					shots.add(new Shot(Client.loader.getProjectileObject("Coral Arrow"),pos.x,pos.y,pos.x,pos.y, null, startAngle+=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range, parent));
+					shots.add(new Shot(Client.loader.getProjectileObject(current.projectileName),pos.x,pos.y,pos.x,pos.y, null, startAngle+=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range, parent));
 				}
 				
 				frame++;
@@ -118,11 +92,10 @@ public class Enemy extends Entity implements Lootable{
 		}
 		if(System.currentTimeMillis()-lastPatternChange>5000){
 			if(changes%2==0){
-				attackPattern2();
 				changes++;
+				
 				lastPatternChange=System.currentTimeMillis();
 			}else{
-				attackPattern1();
 				changes++;
 				lastPatternChange=System.currentTimeMillis();
 			}
@@ -131,14 +104,14 @@ public class Enemy extends Entity implements Lootable{
 		
 	}
 	
-	public void updateShots() {
+	public void updateShots(float dt) {
 		ArrayList<Shot> shotsToRemove = new ArrayList<Shot>();
 		for (Shot p : shots) {
 			if (PVector.dist(p.source, p.pos) > p.range
 					|| Client.checkSimpleCollision(p.colBox) != null) {
 				shotsToRemove.add(p);
 			} else {
-				p.update();
+				p.update(dt);
 			}
 		}
 		

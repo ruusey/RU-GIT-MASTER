@@ -2,6 +2,7 @@ package finalproj;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 import XMLObjects.ContainerObject;
+import XMLObjects.EnemyObject;
 import XMLObjects.GameObject;
 import XMLObjects.PlayerObject;
 import XMLObjects.ProjectileObject;
@@ -26,6 +28,7 @@ public class XMLParse {
 	public static Hashtable<String,GameObject> gameObjects = new Hashtable<String,GameObject>();
 	public static Hashtable<String,WallObject> walls = new Hashtable<String,WallObject>();
 	public static Hashtable<String,PlayerObject> players = new Hashtable<String,PlayerObject>();
+	public static Hashtable<String,EnemyObject> enemies = new Hashtable<String,EnemyObject>();
 	public XMLParse(String path){
 		load(path);
 	}
@@ -56,6 +59,9 @@ public class XMLParse {
 					parseGameObject(node);
 				}else if(clas.equals("Player")){
 					parsePlayer(node);
+				}
+				else if(clas.equals("Enemy")){
+					parseEnemy(node);
 				}
 
 			}
@@ -210,6 +216,43 @@ public class XMLParse {
 		System.out.println(gen.serialize(p));
 		players.put(name, p);
 	}
+	public static void parseEnemy(Element node){
+		Element textureMap = node.getChild("Texture");
+		String name = node.getAttributeValue("id");
+		int id = Integer.parseInt(node.getAttributeValue("type"));
+		String file = textureMap.getChildText("File");
+		int x = Integer.parseInt(textureMap.getChildText("X"));
+		int y = Integer.parseInt(textureMap.getChildText("Y"));
+		Texture tex = new Texture(file, x, y);
+		int maxHp,def, size;
+		maxHp=Integer.parseInt(node.getChildText("MaxHitPoints"));
+		def=Integer.parseInt(node.getChildText("Defense"));
+		size=Integer.parseInt(node.getChildText("Size"));
+		
+		ArrayList<AttackPattern> patterns = new ArrayList<AttackPattern>();
+		Element thisProjNode = node.getChild("Projectile");
+		while(thisProjNode!=null){
+			Element projectileNode = thisProjNode;
+			String projId = projectileNode.getChildText("ObjectId");
+			float angleBetween = Float.parseFloat(projectileNode.getChildText("AngleBetweenShots"));
+			float range = Float.parseFloat(projectileNode.getChildText("Range"));
+			int speed = Integer.parseInt(projectileNode.getChildText("Speed"));
+			int sizeProjectile = Integer.parseInt(projectileNode.getChildText("Size"));
+			int damage = Integer.parseInt(projectileNode.getChildText("Damage"));
+			int delay = Integer.parseInt(projectileNode.getChildText("ShotDelay"));
+			boolean targetPlayer = Boolean.parseBoolean(projectileNode.getChildText("TargetPlayer"));
+			int numShots = Integer.parseInt(projectileNode.getChildText("ShotsPerFrame"));
+			AttackPattern p = new AttackPattern(delay,targetPlayer,numShots,angleBetween,damage,sizeProjectile,speed,range,projId);
+			patterns.add(p);
+			thisProjNode=thisProjNode.getChild("Projectile");
+			
+		}
+		
+		EnemyObject e = new EnemyObject(name,id,tex,patterns,maxHp,def,size);
+		Genson gen = new Genson();
+		System.out.println(gen.serialize(e));
+		enemies.put(name, e);
+	}
 	
 	public ProjectileObject getProjectileObject(String name){
 		return projectiles.get(name);
@@ -228,5 +271,8 @@ public class XMLParse {
 	}
 	public PlayerObject getPlayerObject(String name){
 		return players.get(name);
+	}
+	public EnemyObject getEnemyObject(String name){
+		return enemies.get(name);
 	}
 }

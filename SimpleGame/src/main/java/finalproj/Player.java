@@ -16,66 +16,77 @@ public class Player extends Entity {
 	ArrayList<Shot> shots = new ArrayList<Shot>();
 	public HealthBar hp;
 	public long lastCheck;
+	public long updateCheck;
 	public WeaponObject w;
 	public PlayerObject p;
-	public Player(PlayerObject p,int x, int y, int diameter, PApplet parent) {
-		super(p.name,p.id,p.tex,x, y, diameter, diameter, parent);
+
+	public Player(PlayerObject p, int x, int y, int diameter, PApplet parent) {
+		super(p.name, p.id, p.tex, x, y, diameter, diameter, parent);
 		pos = new PVector(x, y);
 		vel = new PVector(0, 0);
 		firing = false;
 		this.w = Client.loader.getWeapon("Coral Bow");
-		
-		final int x1 = (700 - diameter*2) / 2;
-		final int y1 = (700) / 2;
-		hp = new HealthBar((int)x1,(int)y1,200,diameter/2, p.hp);
-		colBox = new Rectangle((int) pos.x - (diameter / 2), (int) pos.y
-				- (diameter / 2), diameter, diameter);
-		this.lastCheck=System.currentTimeMillis();
-		
-		this.p=p;
-	}
-	
-	public void update() {
 
+		final int x1 = (700 - diameter * 2) / 2;
+		final int y1 = (700) / 2;
+		hp = new HealthBar((int) x1, (int) y1, 200, diameter / 2, p.hp);
+		colBox = new Rectangle((int) pos.x - (diameter / 2), (int) pos.y - (diameter / 2), diameter, diameter);
+		this.lastCheck = System.currentTimeMillis();
+		updateCheck=System.currentTimeMillis();
+		this.p = p;
+	}
+
+	public void update(float dt) {
+
+		vel.setMag(300 / dt);
 		pos.add(vel);
+		if (System.currentTimeMillis() - updateCheck >= 1000) {
+			if(hp.actualHealth<hp.maxHealth){
+				hp.actualHealth+=p.vit*0.12;
+			}
+			updateCheck=System.currentTimeMillis();
+			
+		}
 		hp.update();
+
 		colBox.x = (int) pos.x - colBox.width / 2;
 		colBox.y = (int) pos.y - colBox.height / 2;
 		tile = Client.getTile(pos);
-		
+
 		drawPlayer();
 		drawProjectiles();
-		
 
 	}
-	public void drawPlayer(){
+
+	public void drawPlayer() {
 		PVector screenLoc = Client.world2screen(new PVector(colBox.x, colBox.y));
 		parent.noFill();
 		parent.fill(0, 0, 255);
 		BufferedImage image = Client.sl.getSprite(tex);
-		PImage toDraw = new PImage(Client.scale(image,64,64));
+		PImage toDraw = new PImage(Client.scale(image, 64, 64));
 		screenLoc = Client.world2screen(pos);
-		parent.image(toDraw,screenLoc.x-toDraw.width/2, screenLoc.y-toDraw.height/2, 64, 64);
-		
-		parent.rect(parent.width / 2-100 - hp.green.width / 2, hp.green.y - 50, hp.green.width, hp.green.height/2);
+		parent.image(toDraw, screenLoc.x - toDraw.width / 2, screenLoc.y - toDraw.height / 2, 64, 64);
+
+		parent.rect(parent.width / 2 - 100 - hp.green.width / 2, hp.green.y - 50, hp.green.width, hp.green.height / 2);
 	}
-	public void drawProjectiles(){
+
+	public void drawProjectiles() {
 		ArrayList<Shot> shotsToRemove = new ArrayList<Shot>();
 		for (Shot pr : shots) {
 
-			if (Client.checkSimpleCollision(pr.colBox)!=null) {
+			if (Client.checkSimpleCollision(pr.colBox) != null) {
 
 				shotsToRemove.add(pr);
 			} else {
 				PVector screenLoc = Client.world2screen(pr.pos);
 				BufferedImage image = Client.sl.getSprite(pr.tex);
-				PImage toDraw = new PImage(Client.scale(image,32,32));
-				
+				PImage toDraw = new PImage(Client.scale(image, 32, 32));
+
 				parent.pushMatrix();
 				parent.translate(screenLoc.x, screenLoc.y);
-				parent.rotate(pr.angle+PApplet.PI/4);
+				parent.rotate(pr.angle + PApplet.PI / 4);
 				parent.imageMode(PApplet.CENTER);
-				parent.image(toDraw,0, 0, 32, 32);
+				parent.image(toDraw, 0, 0, 32, 32);
 				parent.imageMode(PApplet.CORNER);
 				parent.popMatrix();
 			}
@@ -84,14 +95,13 @@ public class Player extends Entity {
 		shots.removeAll(shotsToRemove);
 	}
 
-	public void updateShots() {
+	public void updateShots(float dt) {
 		ArrayList<Shot> shotsToRemove = new ArrayList<Shot>();
 		for (Shot p : shots) {
-			if (PVector.dist(p.source, p.pos) > p.range
-					|| Client.checkSimpleCollision(p.colBox) != null) {
+			if (PVector.dist(p.source, p.pos) > p.range || Client.checkSimpleCollision(p.colBox) != null) {
 				shotsToRemove.add(p);
 			} else {
-				p.update();
+				p.update(dt);
 			}
 		}
 		shots.removeAll(shotsToRemove);

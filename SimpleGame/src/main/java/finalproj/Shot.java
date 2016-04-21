@@ -28,10 +28,11 @@ public class Shot extends Entity {
 		
 	}
 
-	public void update() {
+	public void update(float dt) {
 
 		PVector up = PVector.fromAngle(angle);
-		up.setMag(mag);
+		up.setMag(mag+(20/dt));
+		
 		pos.add(up);
 		tile = Client.getTile(pos);
 		colBox.x = (int) pos.x - colBox.width / 2;
