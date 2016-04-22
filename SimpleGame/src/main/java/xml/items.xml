@@ -31,6 +31,16 @@
 		<AngleCorrection>1</AngleCorrection>
 		<Size>10</Size>
 	</Object>
+	<Object type="8" id="EnemyAttack1">
+		<Class>Projectile</Class>
+		<Texture>
+			<File>86.png</File>
+			<X>3</X>
+			<Y>4</Y>
+		</Texture>
+		<AngleCorrection>1</AngleCorrection>
+		<Size>10</Size>
+	</Object>
 	<Object type="3" id="Archer">
 		<Class>Player</Class>
 		<Texture>
@@ -44,11 +54,11 @@
 		<SlotTypes>3,15,6,9,0,0,0,0,0,0,0,0</SlotTypes>
 		<Equipment>12,2,-1,-1,12,-1,-1,-1,-1,-1,-1,-1</Equipment>
 		<Hp max="700">130</Hp>
-		<Attack max="75">12</Attack>
+		<Attack max="75">50</Attack>
 		<Defense max="25">0</Defense>
 		<Speed max="50">12</Speed>
 		<Dexterity max="50">12</Dexterity>
-		<Vitality max="40">12</Vitality>
+		<Vitality max="40">50</Vitality>
 
 	</Object>
 	<Object type="4" id="Loot Bag">
@@ -91,9 +101,9 @@
 		</Texture>
 		<MaxHitPoints>10000</MaxHitPoints>
 		<Size>100</Size>
-		<Defense>20</Defense>
+		<Defense>200</Defense>
 		<Projectile id="0">
-			<ObjectId>Coral Arrow</ObjectId>
+			<ObjectId>EnemyAttack1</ObjectId>
 			<Speed>5</Speed>
 			<Size>30</Size>
 			<Damage>60</Damage>

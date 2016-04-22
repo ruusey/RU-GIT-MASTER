@@ -24,6 +24,7 @@ public class Enemy extends Entity implements Lootable{
 		lastFire=System.currentTimeMillis();
 		lastPatternChange=System.currentTimeMillis();
 		hp = new HealthBar((int)pos.x,(int)pos.y,200,diameter/2, en.hp);
+		this.en=en;
 	}
 
 	public void update(float dt){

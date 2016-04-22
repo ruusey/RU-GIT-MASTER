@@ -152,10 +152,10 @@ public final class Client extends PApplet {
 
 		int heroGridX = ((int) p.pos.x / tileSize);
 		int heroGridY = ((int) p.pos.y / tileSize);
-		int leftGrid = heroGridX - (width / tileSize) / 2;
-		int topGrid = heroGridY - (height / tileSize) / 2;
+		int leftGrid = (heroGridX - (width / tileSize) / 2)-1;
+		int topGrid = (heroGridY - (height / tileSize) / 2)-1;
 		int rightGrid = 1 + heroGridX + (width / tileSize) / 2;
-		int bottomGrid = 1 + heroGridY + (height / tileSize) / 2;
+		int bottomGrid = 2 + heroGridY + (height / tileSize) / 2;
 		if (leftGrid < 0) {
 			leftGrid = 0;
 		}
@@ -206,7 +206,21 @@ public final class Client extends PApplet {
 			if (testTiles.contains(pr.tile)) {
 				if (pr.colBox.intersects(p.colBox) && !pr.isHit) {
 					pr.isHit = true;
-					p.hp.Hit(pr.dmg);
+					float percent = pr.dmg*0.85f;
+					int damage = pr.dmg-p.p.def;
+					screenLoc = world2screen(p.pos);
+					fill(0,255,0);
+					textSize(30);
+					if(percent>damage){
+						p.hp.Hit((int)percent);
+						text((int)percent,screenLoc.x,screenLoc.y-32);
+					}else{
+						p.hp.Hit(damage);
+						text((int)damage,screenLoc.x,screenLoc.y-32);
+					}
+					
+					
+				
 					shotsToRemove.add(pr);
 				}
 			}
@@ -228,11 +242,20 @@ public final class Client extends PApplet {
 			if (testTiles.contains(pr.tile)) {
 				if (pr.colBox.intersects(e.colBox) && !pr.isHit) {
 					pr.isHit = true;
-					e.hp.Hit(pr.dmg);
+					float percent = pr.dmg*0.85f;
+					int damage = pr.dmg-e.en.def;
 					screenLoc = world2screen(e.pos);
 					fill(0,255,0);
 					textSize(30);
-					text(pr.dmg,screenLoc.x,screenLoc.y-32);
+					
+					if(percent>damage){
+						e.hp.Hit((int)percent);
+						text((int)percent,screenLoc.x,screenLoc.y-32);
+					}else{
+						e.hp.Hit(damage);
+						text((int)damage,screenLoc.x,screenLoc.y-32);
+					}
+					
 					
 					shotsToRemove.add(pr);
 				}
@@ -282,7 +305,7 @@ public final class Client extends PApplet {
 	// EVERY FRAME HANDLE POTENTIAL SHOOTING
 	public void playerShoot() {
 
-		if (p.firing && System.currentTimeMillis() - lastCheck > 100/p.w.rateOfFire) {
+		if (p.firing && System.currentTimeMillis() - lastCheck > 30/p.w.rateOfFire*p.p.dex) {
 			screenLoc = world2screen(p.pos);
 			float angle = (float) -Math.atan2(mouseX - (screenLoc.x), mouseY - (screenLoc.y)) + PI / 2;
 			float angleABS = (angle) - PI / 2;
