@@ -9,13 +9,14 @@
 			<Y>0</Y>
 		</Texture>
 
-		<RateOfFire>1.25</RateOfFire>
+		<RateOfFire>1.5</RateOfFire>
 		<Projectile>
 			<ObjectId>Coral Arrow</ObjectId>
 			<Speed>8</Speed>
 			<MinDamage>60</MinDamage>
 			<MaxDamage>80</MaxDamage>
 			<Range>350</Range>
+			<AngleBetweenShots>0.1</AngleBetweenShots>
 			<MultiHit />
 		</Projectile>
 		<NumProjectiles>2</NumProjectiles>

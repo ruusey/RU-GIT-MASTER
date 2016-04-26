@@ -333,10 +333,10 @@ public final class Client extends PApplet {
 			ProjectileObject toShoot = loader.getProjectileObject(p.w.projectile);
 			float mult = (float) (0.5 + p.p.att / 50.0f);
 			float damage = random(equipped.minDmg, equipped.maxDmg) * mult;
-			p.shots.add(new Shot(toShoot, p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle - 0.1f, toShoot.size,
-					(int) damage, equipped.speed, (float) equipped.range, this));
-			p.shots.add(new Shot(toShoot, p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle + 0.1f, toShoot.size,
-					(int) damage, equipped.speed, (float) equipped.range, this));
+			p.shots.add(new Shot(toShoot, p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle - equipped.angleBetweenShots,
+					toShoot.size, (int) damage, equipped.speed, (float) equipped.range, this));
+			p.shots.add(new Shot(toShoot, p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle + equipped.angleBetweenShots,
+					toShoot.size, (int) damage, equipped.speed, (float) equipped.range, this));
 
 			lastCheck = System.currentTimeMillis();
 		}

@@ -92,12 +92,13 @@ public class XMLParse {
 		int min = Integer.parseInt(projectile.getChildText("MinDamage"));
 		int max = Integer.parseInt(projectile.getChildText("MaxDamage"));
 		double range = Double.parseDouble(projectile.getChildText("Range"));
+		float angleBetween = Float.parseFloat(projectile.getChildText("AngleBetweenShots"));
 		boolean multiHit = (projectile.getChildText("MultiHit")) != null;
 		double rof = Double.parseDouble(node.getChildText("RateOfFire"));
 
 		Texture tex = new Texture(file, x, y);
 		WeaponObject w = new WeaponObject(name, id, tex, rof, namePro, speed,
-				min, max, numProjectiles, range, multiHit);
+				min, max, numProjectiles, range, multiHit,angleBetween);
 		System.out.println(gen.serialize(w));
 		weapons.put(name,w);
 
