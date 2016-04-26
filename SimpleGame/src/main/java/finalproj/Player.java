@@ -38,7 +38,7 @@ public class Player extends Entity {
 
 	public void update(float dt) {
 
-		vel.setMag(300 / dt);
+		vel.setMag((300+p.spd) / dt);
 		pos.add(vel);
 		if (System.currentTimeMillis() - updateCheck >= 1000) {
 			if(hp.actualHealth<hp.maxHealth){

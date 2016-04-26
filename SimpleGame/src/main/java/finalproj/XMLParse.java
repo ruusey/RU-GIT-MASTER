@@ -230,9 +230,10 @@ public class XMLParse {
 		size=Integer.parseInt(node.getChildText("Size"));
 		
 		ArrayList<AttackPattern> patterns = new ArrayList<AttackPattern>();
-		Element thisProjNode = node.getChild("Projectile");
-		while(thisProjNode!=null){
-			Element projectileNode = thisProjNode;
+		
+		List<Element> projectileNodes = node.getChildren("Projectile");
+		for(Element projectileNode : projectileNodes){
+			
 			String projId = projectileNode.getChildText("ObjectId");
 			float angleBetween = Float.parseFloat(projectileNode.getChildText("AngleBetweenShots"));
 			float range = Float.parseFloat(projectileNode.getChildText("Range"));
@@ -244,9 +245,12 @@ public class XMLParse {
 			int numShots = Integer.parseInt(projectileNode.getChildText("ShotsPerFrame"));
 			AttackPattern p = new AttackPattern(delay,targetPlayer,numShots,angleBetween,damage,sizeProjectile,speed,range,projId);
 			patterns.add(p);
-			thisProjNode=thisProjNode.getChild("Projectile");
 			
 		}
+		
+		
+			
+		
 		
 		EnemyObject e = new EnemyObject(name,id,tex,patterns,maxHp,def,size);
 		Genson gen = new Genson();

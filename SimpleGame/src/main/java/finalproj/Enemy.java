@@ -15,7 +15,8 @@ public class Enemy extends Entity implements Lootable{
 	int frame;
 	long lastFire;
 	long lastPatternChange;
-	int changes = 0;
+	int patternIndex = 0;
+	boolean firing=true;
 	public HealthBar hp;
 	public EnemyObject en;
 	public Enemy(EnemyObject en,float x, float y, PVector vel, int diameter,PApplet parent) {
@@ -61,15 +62,22 @@ public class Enemy extends Entity implements Lootable{
 		parent.rect(screenLoc.x - hp.green.width / 2, screenLoc.y - 50, hp.green.width, hp.green.height/2);
 	}
 	public void attack(){
+		if(firing){
+			shoot();
+		}
 		
+		updateAttackPattern();
+		
+		
+	}
+	
+	public void shoot(){
 		if(current.targetPlayer){
 			float angle = (float) -Math.atan2(Client.p.pos.x - pos.x, Client.p.pos.y
 					- pos.y)+PApplet.PI/2;
-					
+			//ADJUST ANGLE TO AIM AT PLAYER		
 			angle+=0.2;
-			//PVector vel1 = PVector.fromAngle(angle);
-
-			if(System.currentTimeMillis()-lastFire>450){
+			if(System.currentTimeMillis()-lastFire>current.shotDelay){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
 					shots.add(new Shot(Client.loader.getProjectileObject(current.projectileName),pos.x,pos.y,pos.x,pos.y, null, angle-=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range, parent));
@@ -80,7 +88,7 @@ public class Enemy extends Entity implements Lootable{
 			}
 		}else{
 			float startAngle=0;
-			if(System.currentTimeMillis()-lastFire>450){
+			if(System.currentTimeMillis()-lastFire>current.shotDelay){
 				for(int x = 0; x<current.shotsPerFrame;x++){
 					
 					shots.add(new Shot(Client.loader.getProjectileObject(current.projectileName),pos.x,pos.y,pos.x,pos.y, null, startAngle+=current.angleBetweenShots,current.shotDiameter,current.shotDamage,current.shotSpeed,current.range, parent));
@@ -91,20 +99,7 @@ public class Enemy extends Entity implements Lootable{
 		}
 			
 		}
-		if(System.currentTimeMillis()-lastPatternChange>5000){
-			if(changes%2==0){
-				changes++;
-				
-				lastPatternChange=System.currentTimeMillis();
-			}else{
-				changes++;
-				lastPatternChange=System.currentTimeMillis();
-			}
-			
-		}
-		
 	}
-	
 	public void updateShots(float dt) {
 		ArrayList<Shot> shotsToRemove = new ArrayList<Shot>();
 		for (Shot p : shots) {
@@ -117,6 +112,25 @@ public class Enemy extends Entity implements Lootable{
 		}
 		
 		shots.removeAll(shotsToRemove);
+	}
+	public void updateAttackPattern(){
+		if(en.patterns.size()>1){
+													//ADD PATTERN CHANGE DELAY PARAM IN ENEMY XML OBJECT
+			if(System.currentTimeMillis()-lastPatternChange>5000){
+				if(patternIndex+1==en.patterns.size()){
+					patternIndex=0;
+					current = en.patterns.get(patternIndex);
+				}else{
+					patternIndex++;
+					current = en.patterns.get(patternIndex);
+				}
+				
+
+				
+				lastPatternChange=System.currentTimeMillis();
+			}
+		}
+		
 	}
 
 	public void handleTerrainCollision(Rectangle col) {

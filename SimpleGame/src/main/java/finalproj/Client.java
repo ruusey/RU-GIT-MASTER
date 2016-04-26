@@ -55,7 +55,7 @@ public final class Client extends PApplet {
 	// FOR WORLD2SCREEN FUNCTIONALITY
 	static int screenWidth;
 	static int screenHeight;
-	
+
 	public static void main(String[] args) {
 
 		PApplet.main(Client.class.getName());
@@ -63,15 +63,15 @@ public final class Client extends PApplet {
 	}
 
 	public void draw() {
-		
+
 		background(0);
 		if (p != null) {
-			
+
 			drawTiles();
-			
+
 			drawMiscTxt();
 			playerShoot();
-			
+
 			ArrayList<Enemy> toRemove = new ArrayList<Enemy>();
 			for (Enemy enemy : enemies) {
 
@@ -79,6 +79,7 @@ public final class Client extends PApplet {
 					if (enemy.hp.actualHealth < 1) {
 						toRemove.add(enemy);
 					} else {
+						enemy.firing = true;
 						enemy.update(frameRate);
 						enemy.attack();
 						enemy.updateShots(frameRate);
@@ -87,6 +88,9 @@ public final class Client extends PApplet {
 						checkEnemyHit(enemy);
 					}
 
+				} else {
+					enemy.shots.clear();
+					enemy.firing = false;
 				}
 
 			}
@@ -100,9 +104,9 @@ public final class Client extends PApplet {
 			gui.update(p);
 			drawLoot();
 			PVector index = indexInTiles(getTile(p.pos));
-			//System.out.println("Tile X: " + index.x + " Tile Y: " + index.y);
+			// System.out.println("Tile X: " + index.x + " Tile Y: " + index.y);
 			// HANDLE COLIISION WITH TILES
-			
+
 			ArrayList<Rectangle> collisions = checkCollision(p.colBox);
 			if (collisions != null) {
 				for (Rectangle col : collisions) {
@@ -114,8 +118,6 @@ public final class Client extends PApplet {
 			}
 
 		}
-		
-		
 
 	}
 
@@ -128,32 +130,36 @@ public final class Client extends PApplet {
 		text("Player X:" + p.pos.x + ", Player Y:" + p.pos.y + " FPS: " + frameRate, 20, 20);
 		popMatrix();
 	}
-	public void drawLoot(){
-		if(loot.size()==0)return;
-		for(Lootbag bag: loot){
-			if(bag.tile.posIn(p.pos)){
-				for(Item i: bag.contents){
-					if(i==null)continue;
+
+	public void drawLoot() {
+		if (loot.size() == 0)
+			return;
+		for (Lootbag bag : loot) {
+			if (bag.tile.posIn(p.pos)) {
+				for (Item i : bag.contents) {
+					if (i == null)
+						continue;
 					BufferedImage image = Client.sl.getSprite(i.tex);
-					PImage toDraw = new PImage(scale(image,32,32));
-					
-					image(toDraw,gui.pos.x, gui.pos.y+gui.height/2, 32, 32);
+					PImage toDraw = new PImage(scale(image, 32, 32));
+
+					image(toDraw, gui.pos.x, gui.pos.y + gui.height / 2, 32, 32);
 				}
-			
+
 			}
 			BufferedImage image = Client.sl.getSprite(bag.tex);
-			PImage toDraw = new PImage(Client.scale(image,32,32));
+			PImage toDraw = new PImage(Client.scale(image, 32, 32));
 			PVector screenLoc = Client.world2screen(bag.pos);
-			image(toDraw,screenLoc.x-toDraw.width/2, screenLoc.y-toDraw.height/2, 32, 32);
+			image(toDraw, screenLoc.x - toDraw.width / 2, screenLoc.y - toDraw.height / 2, 32, 32);
 		}
 	}
+
 	// DRAW THE MAP TILES
 	public void drawTiles() {
 
 		int heroGridX = ((int) p.pos.x / tileSize);
 		int heroGridY = ((int) p.pos.y / tileSize);
-		int leftGrid = (heroGridX - (width / tileSize) / 2)-1;
-		int topGrid = (heroGridY - (height / tileSize) / 2)-1;
+		int leftGrid = (heroGridX - (width / tileSize) / 2) - 1;
+		int topGrid = (heroGridY - (height / tileSize) / 2) - 1;
 		int rightGrid = 1 + heroGridX + (width / tileSize) / 2;
 		int bottomGrid = 2 + heroGridY + (height / tileSize) / 2;
 		if (leftGrid < 0) {
@@ -178,14 +184,12 @@ public final class Client extends PApplet {
 				Tile t = tiles.get(x).get(y);
 				row.add(tiles.get(x).get(y));
 				BufferedImage image = Client.sl.getSprite(t.tex);
-				
+
 				PImage toDraw = new PImage(scale(image, 64, 64));
 
 				screenLoc = world2screen(t.pos);
-				
-					image(toDraw, (screenLoc.x), (screenLoc.y));
-				
-				
+
+				image(toDraw, (screenLoc.x), (screenLoc.y));
 
 			}
 			all.add(row);
@@ -201,26 +205,25 @@ public final class Client extends PApplet {
 			return;
 		ArrayList<Shot> shotsToRemove = new ArrayList<Shot>();
 		ArrayList<Tile> testTiles = getAdjacentTiles(getTile(p.pos));
-		if(testTiles==null)return;
+		if (testTiles == null)
+			return;
 		for (Shot pr : e.shots) {
 			if (testTiles.contains(pr.tile)) {
 				if (pr.colBox.intersects(p.colBox) && !pr.isHit) {
 					pr.isHit = true;
-					float percent = pr.dmg*0.85f;
-					int damage = pr.dmg-p.p.def;
+					float percent = pr.dmg * 0.85f;
+					int damage = pr.dmg - p.p.def;
 					screenLoc = world2screen(p.pos);
-					fill(0,255,0);
+					fill(0, 255, 0);
 					textSize(30);
-					if(percent>damage){
-						p.hp.Hit((int)percent);
-						text((int)percent,screenLoc.x,screenLoc.y-32);
-					}else{
+					if (percent > damage) {
+						p.hp.Hit((int) percent);
+						text((int) percent, screenLoc.x, screenLoc.y - 32);
+					} else {
 						p.hp.Hit(damage);
-						text((int)damage,screenLoc.x,screenLoc.y-32);
+						text((int) damage, screenLoc.x, screenLoc.y - 32);
 					}
-					
-					
-				
+
 					shotsToRemove.add(pr);
 				}
 			}
@@ -236,27 +239,27 @@ public final class Client extends PApplet {
 			return;
 		ArrayList<Shot> shotsToRemove = new ArrayList<Shot>();
 		ArrayList<Tile> testTiles = getAdjacentTiles(getTile(e.pos));
-		if(testTiles==null)return;
+		if (testTiles == null)
+			return;
 		for (Shot pr : p.shots) {
-			
+
 			if (testTiles.contains(pr.tile)) {
 				if (pr.colBox.intersects(e.colBox) && !pr.isHit) {
 					pr.isHit = true;
-					float percent = pr.dmg*0.85f;
-					int damage = pr.dmg-e.en.def;
+					float percent = pr.dmg * 0.85f;
+					int damage = pr.dmg - e.en.def;
 					screenLoc = world2screen(e.pos);
-					fill(0,255,0);
+					fill(0, 255, 0);
 					textSize(30);
-					
-					if(percent>damage){
-						e.hp.Hit((int)percent);
-						text((int)percent,screenLoc.x,screenLoc.y-32);
-					}else{
+
+					if (percent > damage) {
+						e.hp.Hit((int) percent);
+						text((int) percent, screenLoc.x, screenLoc.y - 32);
+					} else {
 						e.hp.Hit(damage);
-						text((int)damage,screenLoc.x,screenLoc.y-32);
+						text((int) damage, screenLoc.x, screenLoc.y - 32);
 					}
-					
-					
+
 					shotsToRemove.add(pr);
 				}
 			}
@@ -305,32 +308,31 @@ public final class Client extends PApplet {
 	// EVERY FRAME HANDLE POTENTIAL SHOOTING
 	public void playerShoot() {
 
-		if (p.firing && System.currentTimeMillis() - lastCheck > 30/p.w.rateOfFire*p.p.dex) {
+		if (p.firing && System.currentTimeMillis() - lastCheck > 30 / p.w.rateOfFire * p.p.dex) {
 			screenLoc = world2screen(p.pos);
 			float angle = (float) -Math.atan2(mouseX - (screenLoc.x), mouseY - (screenLoc.y)) + PI / 2;
 			float angleABS = (angle) - PI / 2;
 			if (angleABS >= -3 * PI / 4 && angleABS <= -PI / 4) {
-				//p.img = sl.getSprite("93.png", 0, 5);
+				// p.img = sl.getSprite("93.png", 0, 5);
 			} else if (angleABS > -PI / 4 && angleABS <= PI / 4) {
-				//p.img = sl.getSprite("93.png", 0, 4);
+				// p.img = sl.getSprite("93.png", 0, 4);
 			} else if (angleABS > PI / 4 && angleABS <= 3 * PI / 4) {
-				//p.img = flipHorz(sl.getSprite("93.png", 0, 3));
+				// p.img = flipHorz(sl.getSprite("93.png", 0, 3));
 			} else if (angleABS >= 3 * PI / 4 && angleABS <= PI) {
-				//p.img = sl.getSprite("93.png", 0, 3);
+				// p.img = sl.getSprite("93.png", 0, 3);
 			} else {
-				//p.img = sl.getSprite("93.png", 0, 5);
+				// p.img = sl.getSprite("93.png", 0, 5);
 			}
 			// ADD PROJECTILES
 			PVector vel1 = PVector.fromAngle(angle);
 			WeaponObject equipped = p.w;
 			ProjectileObject toShoot = loader.getProjectileObject(p.w.projectile);
 			float mult = (float) (0.5 + p.p.att / 50.0f);
-			float damage = random(equipped.minDmg,equipped.maxDmg) * mult;
-			p.shots.add(new Shot(toShoot,p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle-0.1f, toShoot.size, (int) damage, equipped.speed, (float) equipped.range,
-					this));
-			p.shots.add(new Shot(toShoot,p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle+0.1f, toShoot.size, (int) damage, equipped.speed, (float) equipped.range,
-					this));
-			
+			float damage = random(equipped.minDmg, equipped.maxDmg) * mult;
+			p.shots.add(new Shot(toShoot, p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle - 0.1f, toShoot.size,
+					(int) damage, equipped.speed, (float) equipped.range, this));
+			p.shots.add(new Shot(toShoot, p.pos.x, p.pos.y, p.pos.x, p.pos.y, vel1, angle + 0.1f, toShoot.size,
+					(int) damage, equipped.speed, (float) equipped.range, this));
 
 			lastCheck = System.currentTimeMillis();
 		}
@@ -349,15 +351,13 @@ public final class Client extends PApplet {
 			ArrayList<Tile> row = new ArrayList<Tile>();
 			for (int y = 0; y < 100; y++) {
 				if (random(1) > 0.9) {
-					
-					
-					row.add(new Tile(loader.getGameObject("Wall2"),x * tileSize, y * tileSize, tileSize, tileSize, color(0, 0, 255), true,
-							this));
+
+					row.add(new Tile(loader.getGameObject("Wall2"), x * tileSize, y * tileSize, tileSize, tileSize,
+							color(0, 0, 255), true, this));
 				} else {
-					
-		
-					row.add(new Tile(loader.getGameObject("Wall1"),x * tileSize, y * tileSize, tileSize, tileSize, random(255), false,
-							this));
+
+					row.add(new Tile(loader.getGameObject("Wall1"), x * tileSize, y * tileSize, tileSize, tileSize,
+							random(255), false, this));
 				}
 
 			}
@@ -369,11 +369,11 @@ public final class Client extends PApplet {
 
 		// LOAD SPRITES IN DIRECTORY
 		PlayerObject pl = loader.getPlayerObject("Archer");
-		p = new Player(pl,500,500,64, this);
+		p = new Player(pl, 500, 500, 64, this);
 
 		for (int i = 0; i < 5; i++) {
 			EnemyObject eo = loader.getEnemyObject("Enemy1");
-			Enemy en = new Enemy(eo,random(1000), random(1000), new PVector(0, 0), 64, this);
+			Enemy en = new Enemy(eo, random(1000), random(1000), new PVector(0, 0), 64, this);
 			enemies.add(en);
 		}
 		// NEW GUI (WIP)
@@ -395,22 +395,22 @@ public final class Client extends PApplet {
 			p.vel.y = -6;
 			if (p.firing)
 				return;
-			//p.tex = sl.getSprite("93.png", 0, 5);
+			// p.tex = sl.getSprite("93.png", 0, 5);
 		} else if (key == 's') {
 			p.vel.y = 6;
 			if (p.firing)
 				return;
-			//p.img = sl.getSprite("93.png", 0, 4);
+			// p.img = sl.getSprite("93.png", 0, 4);
 		} else if (key == 'a') {
 			p.vel.x = -6;
 			if (p.firing)
 				return;
-			//p.img = flipHorz(sl.getSprite("93.png", 0, 3));
+			// p.img = flipHorz(sl.getSprite("93.png", 0, 3));
 		} else if (key == 'd') {
 			p.vel.x = 6;
 			if (p.firing)
 				return;
-			//p.img = sl.getSprite("93.png", 0, 3);
+			// p.img = sl.getSprite("93.png", 0, 3);
 		}
 	}
 
@@ -482,7 +482,7 @@ public final class Client extends PApplet {
 		if (x > 0 && y > 0) {
 			res.add(tiles.get(x).get(y));
 
-		} 
+		}
 		if (x + 1 < tiles.size())
 			res.add(tiles.get(x + 1).get(y));
 		if (x - 1 > -1)
