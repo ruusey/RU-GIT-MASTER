@@ -33,7 +33,7 @@ public class Entity extends Object{
 		tile=Client.getTile(pos);
 
 	}
-	//if its a circlular object we must adjust
+	//IF A CIRCULAR OBJECT
 	public Entity(String name, int id,Texture t, float x, float y, PVector vel,int diameter, PApplet parent){
 		super(name,id,t);
 		pos = new PVector(x,y);
@@ -45,5 +45,9 @@ public class Entity extends Object{
 		tile=Client.getTile(pos);
 
 	}
+	//4111 1111 1111 1111
+	//8121 2121 2121 2121
+						
+	
 	
 }
