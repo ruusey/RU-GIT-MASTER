@@ -162,6 +162,8 @@ public final class Client extends PApplet {
 		int topGrid = (heroGridY - (height / tileSize) / 2) - 1;
 		int rightGrid = 1 + heroGridX + (width / tileSize) / 2;
 		int bottomGrid = 2 + heroGridY + (height / tileSize) / 2;
+		
+		//MAKE SURE WE DONT GO OUTSIDE THE BOUNDS OF THE ARRAYLIST
 		if (leftGrid < 0) {
 			leftGrid = 0;
 		}
@@ -217,10 +219,12 @@ public final class Client extends PApplet {
 					fill(0, 255, 0);
 					textSize(30);
 					if (percent > damage) {
+						System.out.println("Hit Player: "+(int)percent);
 						p.hp.Hit((int) percent);
 						text((int) percent, screenLoc.x, screenLoc.y - 32);
 					} else {
-						p.hp.Hit(damage);
+						System.out.println("Hit Player: "+damage);
+						p.hp.Hit((int)damage);
 						text((int) damage, screenLoc.x, screenLoc.y - 32);
 					}
 
@@ -308,7 +312,7 @@ public final class Client extends PApplet {
 	// EVERY FRAME HANDLE POTENTIAL SHOOTING
 	public void playerShoot() {
 
-		if (p.firing && System.currentTimeMillis() - lastCheck > 30 / p.w.rateOfFire * p.p.dex) {
+		if (p.firing && System.currentTimeMillis() - lastCheck > 10 * (p.w.rateOfFire * p.p.dex)) {
 			screenLoc = world2screen(p.pos);
 			float angle = (float) -Math.atan2(mouseX - (screenLoc.x), mouseY - (screenLoc.y)) + PI / 2;
 			float angleABS = (angle) - PI / 2;

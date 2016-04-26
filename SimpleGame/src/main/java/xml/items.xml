@@ -64,10 +64,10 @@
 		<SlotTypes>3,15,6,9,0,0,0,0,0,0,0,0</SlotTypes>
 		<Equipment>12,2,-1,-1,12,-1,-1,-1,-1,-1,-1,-1</Equipment>
 		<Hp max="700">130</Hp>
-		<Attack max="75">50</Attack>
-		<Defense max="25">0</Defense>
+		<Attack max="75">100</Attack>
+		<Defense max="25">10</Defense>
 		<Speed max="50">50</Speed>
-		<Dexterity max="50">12</Dexterity>
+		<Dexterity max="50">5</Dexterity>
 		<Vitality max="40">50</Vitality>
 
 	</Object>

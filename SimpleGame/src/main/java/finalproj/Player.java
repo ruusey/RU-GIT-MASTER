@@ -125,4 +125,19 @@ public class Player extends Entity {
 
 		}
 	}
+	public void moveInventorySpace(int from, int to){
+		if(from>12 || to>12) return;
+		int value1 = p.equipment[from];
+		int value2 = p.equipment[to];
+		p.equipment[to]=value1;
+		p.equipment[from]=value2;
+	}
+	public void dropInventorySpace(int space){
+		if(space==0 || p.equipment.length==0) return;
+		p.equipment[space]=0;
+	}
+	public void addInventorySpace(int objectId, int space){
+		if(p.equipment.length==12 || space>12 || objectId==0) return;
+		p.equipment[space]=objectId;
+	}
 }
