@@ -103,8 +103,6 @@ public final class Client extends PApplet {
 
 			gui.update(p);
 			drawLoot();
-			PVector index = indexInTiles(getTile(p.pos));
-			// System.out.println("Tile X: " + index.x + " Tile Y: " + index.y);
 			// HANDLE COLIISION WITH TILES
 
 			ArrayList<Rectangle> collisions = checkCollision(p.colBox);
@@ -175,9 +173,6 @@ public final class Client extends PApplet {
 		}
 		if (bottomGrid > tiles.get(0).size()) {
 			bottomGrid = tiles.get(0).size();
-		}
-		if (topGrid < 0 || leftGrid < 0) {
-			System.out.println();
 		}
 		ArrayList<ArrayList<Tile>> all = new ArrayList<ArrayList<Tile>>();
 		for (int y = topGrid; y < bottomGrid; y++) {
