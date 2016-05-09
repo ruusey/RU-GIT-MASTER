@@ -44,7 +44,7 @@ public class IndexWrestlers extends Index{
 	        list = (List<Wrestler>) (Object) iw.search(s);
 	        
 	        for( Wrestler w:list){
-	        	System.out.println((gen.serialize(w)));
+	        	System.out.println(w.getName());
 	        }
 	        try{
 	            
