@@ -339,7 +339,7 @@ public final class Client extends PApplet {
 	}
 
 	public void setup() {
-
+		
 		// MAKE THE TILE SIZE MAGNIFIED
 		loader = new XMLParse("src/main/java/xml/items.xml");
 		tileSize *= m;

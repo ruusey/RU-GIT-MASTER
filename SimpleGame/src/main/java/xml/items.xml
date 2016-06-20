@@ -110,7 +110,7 @@
 			<X>0</X>
 			<Y>1</Y>
 		</Texture>
-		<MaxHitPoints>2000</MaxHitPoints>
+		<MaxHitPoints>20000</MaxHitPoints>
 		<Size>100</Size>
 		<Defense>200</Defense>
 		<Projectile id="0">
