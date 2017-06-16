@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Upload Test</title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="toastr/toastr.js"></script> <!-- KICKSTART -->
+</head>
+<body>
+	<script>
+		function upload() {
+			$("#upload_progress_bar").show();
+			uploading = true;
+			var executableFile = $('input[name="executable_upload"]')[0].files[0];
+
+			var files = $('input[name="supporting_files_upload"]')[0].files;
+			if (executableFile == null || files == null) {
+				showError("No Files Selected");
+				return;
+			}
+			var formData = new FormData();
+			for (var i = 0; i < files.length; i++) {
+				var file = files[i];
+
+				formData.append('supporting_files', file, file.name);
+			}
+
+			formData.append('executable_file', executableFile,
+					executableFile.name);
+			var system = $("#upload_identifier").attr('name');
+			$.ajax({
+				url : '/Wrestling/rest/Wrestling/upload',
+				type : 'POST',
+				data : formData,
+				cache : false,
+				contentType : false,
+				processData : false,
+				success : function() {
+					showSuccess('Upload Files Complete');
+					$("#upload_progress_bar").hide();
+					uploading = false;
+					
+				},
+				error : function(response) {
+					$("#upload_progress_bar").hide();
+					showError("Upload Failed" + JSON.stringify(response));
+					uploading = false;
+				},
+				xhr : function() {
+					var myXhr = $.ajaxSettings.xhr();
+					if (myXhr.upload) {
+						myXhr.upload.addEventListener('progress', progress,
+								false);
+					} else {
+						console.log('Upload progress is not supported.');
+					}
+					return myXhr;
+				}
+			});
+
+		}
+
+		function progress(e) {
+			if (e.lengthComputable) {
+				$('#progress_percent').text(
+						Math.floor((e.loaded * 100) / e.total));
+				$('progress').attr({
+					value : e.loaded,
+					max : e.total
+				});
+			}
+		}
+
+		function fileSelected() {
+			var executableFile = $('input[name="executable_upload"]')[0].files[0];
+
+			var files = $('input[name="supporting_files_upload"]')[0].files;
+			$("#upload_data").empty();
+			var executableSize = 0;
+			if (executableFile == null) {
+				$("#upload_data").append("Executable Size: <b>None</b>")
+						.append("<br>Supporting Lib Size: <b>N/A</b>");
+				return;
+			} else if (files == null) {
+				$("#upload_data").append("Executable Size: <b>None</b>")
+						.append("<br>Supporting Lib Size: <b>N/A</b>");
+				return;
+			}
+
+			if (executableFile.size > 1024 * 1024) {
+				executableSize = (Math.round(executableFile.size * 100
+						/ (1024 * 1024)) / 100).toString()
+						+ 'MB';
+			}
+
+			else {
+				executableSize = (Math.round(executableFile.size * 100 / 1024) / 100)
+						.toString()
+						+ 'KB';
+			}
+
+			var supportingSize = 0;
+			for (var i = 0; i < files.length; i++) {
+				var file = files[i];
+				supportingSize += file.size;
+
+			}
+			if (supportingSize > 1024 * 1024) {
+				supportingSize = (Math.round(supportingSize * 100
+						/ (1024 * 1024)) / 100).toString()
+						+ 'MB';
+			}
+
+			else {
+				supportingSize = (Math.round(supportingSize * 100 / 1024) / 100)
+						.toString()
+						+ 'KB';
+			}
+			$("#upload_data").append(
+					"Executable: <b>" + executableFile.name
+							+ "</b>&nbsp;&nbsp;&nbsp; <i>" + executableSize
+							+ "</i>").append(
+					"<br>Supporting Lib: <b>" + files.length
+							+ " Files </b>&nbsp;&nbsp;&nbsp; <i>"
+							+ supportingSize + "</i>")
+		}
+
+		function showError(msg) {
+			toastr.error(msg);
+		}
+		function showSuccess(msg) {
+			toastr.success(msg);
+		}
+	</script>
+
+
+	<h4 id="upload_identifier" name="00000000">Test</h4>
+	<br>
+	<input type="file" id="executable_upload" name="executable_upload"
+		onchange="fileSelected();" />
+	<label class="label_up" for="executable_upload"><i
+		class="fa fa-upload">&nbsp;Choose Executable...</i></label>
+	<br>
+	<input type="file" onchange="fileSelected();"
+		id="supporting_files_upload" name="supporting_files_upload"
+		multiple="multiple" />
+	<label class="label_up" for="supporting_files_upload"><i
+		class="fa fa-upload">&nbsp;Choose Supporting Lib...</i></label>
+	<br>
+	<button onclick="upload();"> Start Upload</button>
+	<p id="upload_data"></p>
+	<div id="upload_progress_bar">
+		<progress max=100></progress>
+		<span id="progress_percent">0</span>%
+	</div>
+	
+</body>
+</html>
