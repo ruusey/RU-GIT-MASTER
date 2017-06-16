@@ -1,9 +1,5 @@
 package com.servlets;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,14 +7,10 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
-import org.glassfish.jersey.media.multipart.BodyPartEntity;
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataParam;
+import javax.ws.rs.core.MediaType;
 
 import com.models.Event;
 import com.models.MatchLogItem;
@@ -79,7 +71,8 @@ public class Endpoints {
 	@GET
 	@Path("/GetBulletin")
 	@Produces(MediaType.WILDCARD)
-	public String getBulletin() {
+	@Consumes(MediaType.WILDCARD)
+	public String getBulletin(String html) {
 
 		try {
 			return IO.getBulletin();
@@ -124,6 +117,7 @@ public class Endpoints {
 
 	@GET
 	@Path("/DeleteWrestler")
+	@Consumes(MediaType.WILDCARD)
 	@Produces("application/json")
 	public Response deleteWrestler(@QueryParam("wrestlerId") int wrestlerId) {
 		Response response = new Response();
@@ -141,6 +135,7 @@ public class Endpoints {
 
 	@GET
 	@Path("/GetTopStats")
+	@Consumes(MediaType.WILDCARD)
 	@Produces("application/json")
 	public List<TopStat> getTopStats(@QueryParam("teamId") int teamId) {
 		ArrayList<String> statsToGet = new ArrayList<String>();
@@ -323,6 +318,7 @@ public class Endpoints {
 
 	@GET
 	@Path("/GetEvents")
+	@Consumes("application/json")
 	@Produces("application/json")
 	public List<Event> GetEvents() {
 
@@ -334,9 +330,9 @@ public class Endpoints {
 		}
 		return null;
 	}
-
 	@GET
 	@Path("/GetCurrentMatch")
+	@Consumes("application/json")
 	@Produces("application/json")
 	public List<MatchLogItem> GetCurrentMatch() {
 
@@ -344,12 +340,10 @@ public class Endpoints {
 			return IO.getCurrentMatch();
 
 		} catch (Exception e2) {
-			System.out.println("Failed To Retrieve Current Match:"
-					+ e2.getMessage());
+			System.out.println("Failed To Retrieve Current Match:" + e2.getMessage());
 		}
 		return null;
 	}
-
 	@POST
 	@Path("/UpdateCurrentMatch")
 	@Consumes("application/json")
@@ -382,79 +376,4 @@ public class Endpoints {
 
 	}
 
-	@POST
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Path("/upload")
-	public String componentUpload(
-			@FormDataParam("executable_file") FormDataBodyPart executable,
-			@FormDataParam("supporting_files") List<FormDataBodyPart> supporting)
-			throws Exception {
-
-		BodyPartEntity executablePart = (BodyPartEntity) executable.getEntity();
-		String executableName = executable.getContentDisposition()
-				.getFileName();
-		InputStream isExecutable = executable.getValueAs(InputStream.class);
-
-		OutputStream out = null;
-		boolean success = true;
-		try {
-
-			// results.add("WRITING FILE TO > "+tempDirectory+executableName);
-			out = new FileOutputStream(new File("S:/temp/testing/exec/"+executableName));
-			int read = 0;
-			byte[] bytes = new byte[1024];
-			int totalBytes = 0;
-			while ((read = isExecutable.read(bytes)) != -1) {
-				out.write(bytes, 0, read);
-				totalBytes = totalBytes + bytes.length;
-			}
-
-		} catch (Exception e) {
-			success = false;
-
-		} finally {
-			if (out != null) {
-				out.flush();
-				out.close();
-			}
-
-		}
-
-		for (int i = 0; i < supporting.size(); i++) {
-
-			BodyPartEntity supportingPart = (BodyPartEntity) supporting.get(i)
-					.getEntity();
-			String supportingFileName = supporting.get(i)
-					.getContentDisposition().getFileName();
-			InputStream is = supporting.get(i).getValueAs(InputStream.class);
-			out = null;
-
-			try {
-				String targetFile = "S:/temp/testing/sup/"+supportingFileName;
-
-				out = new FileOutputStream(new File(targetFile));
-				int read = 0;
-				byte[] bytes = new byte[1024];
-
-				while ((read = is.read(bytes)) != -1) {
-
-					out.write(bytes, 0, read);
-				}
-
-			} catch (Exception e) {
-
-				success = false;
-				break;
-			} finally {
-				if (out != null) {
-					out.flush();
-					out.close();
-				}
-
-			}
-
-		}
-		return null;
-
-	}
 }
