@@ -5,13 +5,11 @@ import java.util.List;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Service;
 
 import com.lawnbuzz.models.GeoLocation;
+import com.lawnbuzz.models.Service;
 import com.lawnbuzz.models.ServiceProvider;
-import com.lawnbuzz.models.User;
 import com.lawnbuzz.serviceimpl.ServiceProviderServiceImpl;
-import com.lawnbuzz.serviceimpl.UserServiceImpl;
 
 public class Test {
 	public static void main(String[] args){
@@ -32,6 +30,7 @@ public class Test {
 	    sList.add(com.lawnbuzz.models.Service.HOME_CARE);
 	    GeoLocation geo = new GeoLocation(33.7490,84.3880,com.lawnbuzz.util.Util.getCurrentDateTime());
 	    
+	    Service one = Service.HOME_CARE;
 	    
 	    sp.setServices(sList);
 	    sp.setLoc(geo);
