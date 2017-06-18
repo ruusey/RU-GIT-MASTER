@@ -5,12 +5,14 @@ import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Many;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.lawnbuzz.models.GeoLocation;
-import com.lawnbuzz.models.ServiceProvider;
+import com.lawnbuzz.models.JobRequest;
 
 public interface JobMapper {
 	
@@ -22,11 +24,37 @@ public interface JobMapper {
 			@Result(property = "longDescription", column = "longdescription"),
 			@Result(property = "pay", column = "pay"),
 			@Result(property = "complete", column = "complete"),
-			@Result(property = "loc", javaType = GeoLocation.class, column = "geoloc_id", many = @Many(select = "getGeoLoc")) })
-	public List<ServiceProvider> getAllServiceProviders();
+			@Result(property = "loc", javaType = GeoLocation.class, column = "geoloc_id", many = @Many(select = "getGeoLocJob")) })
+	public List<JobRequest> getAllJobs();
 	
-	@Insert("INSERT INTO lb.service_provider (email, username, firstname, lastname,service_id, geoloc_id, rating) VALUES"
-			+ "(#{email},#{userName}, #{firstName}, #{lastName}, #{id}, #{id}, 0);")
+	@Select("SELECT * FROM lb.job WHERE complete=0")
+	@Results(value = {
+			@Result(property = "id", column = "id"),
+			@Result(property = "service", column = "service"),
+			@Result(property = "shortDescription", column = "shortdescription"),
+			@Result(property = "longDescription", column = "longdescription"),
+			@Result(property = "pay", column = "pay"),
+			@Result(property = "complete", column = "complete"),
+			@Result(property = "loc", javaType = GeoLocation.class, column = "geoloc_id", many = @Many(select = "getGeoLocJob")) })
+	public List<JobRequest> getAlIncompleteJobs();
+	
+	@Update("UPDATE lb.job SET complete=1 WHERE id=#{id}")
+	public void completeJob(@Param("id") int id);
+	
+	
+	@Select("SELECT lng,lat,datetime"
+			+ " FROM lb.job_geoloc WHERE geoloc_id = #{geoloc_id}")
+	public GeoLocation getGeoLocJob(int geoLocId);
+	
+	@Insert("INSERT INTO lb.job(service, shortdescription, longdescription, geoloc_id, pay,complete) VALUES"
+			+ "(#{service},#{shortDescription}, #{longDescription}, #{id}, #{pay},0);")
 	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-	public void registerServiceProvider(ServiceProvider sp);
+	public void addJob(JobRequest jr);
+	
+	@Update("UPDATE lb.job SET geoloc_id=#{id} WHERE id=#{id}")
+	public void finalizeJobRegistration(@Param("id") int id);
+	
+	@Insert("INSERT INTO  lb.job_geoloc (geoloc_id,lat,lng,datetime) VALUES "
+			+ "(#{id},#{loc.lat},#{loc.lng},#{loc.dateTime})")
+	public void registerJobGeoLocation(@Param("id") int id, @Param("loc") GeoLocation loc);
 }

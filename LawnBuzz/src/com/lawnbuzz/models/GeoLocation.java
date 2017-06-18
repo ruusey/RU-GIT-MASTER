@@ -5,9 +5,6 @@ public class GeoLocation {
 	private double lng;
 	private String dateTime;
 	
-	
-	
-	
 	public GeoLocation() {
 		super();
 	}

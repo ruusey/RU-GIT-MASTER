@@ -32,6 +32,7 @@ public class ServiceProviderServiceImpl implements ServiceProviderService{
 		registerServiceProviderGeoLoc(sp.getId(),sp.getLoc());
 		
 	}
+	
 	@Override
 	public void registerServiceProviderService(int id,
 			com.lawnbuzz.models.Service service) {
@@ -42,6 +43,10 @@ public class ServiceProviderServiceImpl implements ServiceProviderService{
 	public void registerServiceProviderGeoLoc(int id,GeoLocation loc) {
 		mapper.registerServiceProviderGeoLoc(id, loc);
 		
+	}
+	@Override
+	public ServiceProvider getServiceProviderById(int id) {
+		return mapper.getServiceProviderById(id);
 	}
 
 }

@@ -2,14 +2,24 @@ package com.io;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.lawnbuzz.dao.LawnBuzzDao;
+import com.lawnbuzz.models.JobRequest;
+import com.lawnbuzz.models.ServiceProvider;
+
+@Service("api")
 @Path("/")
 public class API {
 	
@@ -22,10 +32,11 @@ public class API {
 		return new Response(true,ip+" received a response from the API at "+timeStamp);
 	}
 	@GET
-	@Path("/ping")
+	@Path("/getjobs")
 	@Produces("application/json")
-	public Response getUser(@Context HttpServletRequest request, @QueryParam("id") int id) {
-		return null;
+	public List<JobRequest> getUser(@Context HttpServletRequest request, @DefaultValue("10") @QueryParam("radius") int radius) {
+		ServiceProvider logged = LawnBuzzDao.serviceProviderService.getServiceProviderById(1);
+		return LawnBuzzDao.jobService.getJobsInRadius(logged.getLoc(), radius);
 				
 		
 	}

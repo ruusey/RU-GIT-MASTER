@@ -8,6 +8,7 @@ import com.lawnbuzz.models.ServiceProvider;
 
 public interface ServiceProviderService {
 	public List<ServiceProvider> getServiceProviders();
+	public ServiceProvider getServiceProviderById(int id);
 	public void registerServiceProvider(ServiceProvider sp);
 	public void registerServiceProviderService(int id,Service service);
 	public void registerServiceProviderGeoLoc(int id,GeoLocation loc);

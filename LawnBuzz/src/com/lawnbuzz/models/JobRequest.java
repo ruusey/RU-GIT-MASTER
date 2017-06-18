@@ -1,10 +1,16 @@
 package com.lawnbuzz.models;
 
-public class JobRequest {
+import java.io.Serializable;
+
+public class JobRequest implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private Service service;
-	private String shortDescripion;
-	private String longDescrption;
+	private String shortDescription;
+	private String longDescription;
 	private GeoLocation loc;
 	private double pay;
 	private boolean complete;
@@ -13,13 +19,13 @@ public class JobRequest {
 		super();
 	}
 
-	public JobRequest(int id, Service job, String shortDescripion,
+	public JobRequest(int id, Service job, String shortDescription,
 			String longDescrption, GeoLocation loc, double pay, boolean complete) {
 		super();
 		this.id = id;
 		this.service = job;
-		this.shortDescripion = shortDescripion;
-		this.longDescrption = longDescrption;
+		this.shortDescription = shortDescription;
+		this.longDescription = longDescrption;
 		this.loc = loc;
 		this.pay = pay;
 		this.complete = complete;
@@ -41,20 +47,20 @@ public class JobRequest {
 		this.service = service;
 	}
 
-	public String getShortDescripion() {
-		return shortDescripion;
+	public String getShortDescription() {
+		return shortDescription;
 	}
 
-	public void setShortDescripion(String shortDescripion) {
-		this.shortDescripion = shortDescripion;
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
 	}
 
-	public String getLongDescrption() {
-		return longDescrption;
+	public String getLongDescription() {
+		return longDescription;
 	}
 
-	public void setLongDescrption(String longDescrption) {
-		this.longDescrption = longDescrption;
+	public void setLongDescrption(String longDescription) {
+		this.longDescription = longDescription;
 	}
 
 	public GeoLocation getLoc() {

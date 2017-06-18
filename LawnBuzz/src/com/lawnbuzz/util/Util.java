@@ -26,4 +26,7 @@ public class Util {
 	public static String getCurrentDateTime(){
 		return new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss").format(Calendar.getInstance().getTime());
 	}
+	public static String getTimeSince(long start){
+		return (System.currentTimeMillis()-start)+"ms";
+	}
 }

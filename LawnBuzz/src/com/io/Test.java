@@ -2,18 +2,40 @@ package com.io;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.google.maps.model.GeocodingResult;
+import com.lawnbuzz.dao.LawnBuzzDao;
 import com.lawnbuzz.models.GeoLocation;
+import com.lawnbuzz.models.JobRequest;
 import com.lawnbuzz.models.Service;
 import com.lawnbuzz.models.ServiceProvider;
 import com.lawnbuzz.serviceimpl.ServiceProviderServiceImpl;
+import com.owlike.genson.Genson;
+
+import com.lawnbuzz.util.Util;
 
 public class Test {
+	static Logger LOGGER = Logger.getLogger(Test.class.getName());
+	
 	public static void main(String[] args){
-		//LOAD THE SPRING CONFIG FILE
+		Genson gen = new Genson();
+		ServiceProvider me = LawnBuzzDao.serviceProviderService.getServiceProviders().get(0);
+		int radius = 50;
+		GeocodingResult res = LawnBuzzDao.geoService.reverseGeocode(me.getLoc());
+		long start = System.currentTimeMillis();
+		ArrayList<JobRequest> myJobs = new ArrayList<JobRequest>(LawnBuzzDao.geoService.getJobsInRadius(me.getLoc(), radius));
+		
+		
+		LOGGER.info("Found "+myJobs.size()+" jobs within "+radius+"miles of "+res.formattedAddress+" in "+Util.getTimeSince(start));
+		LOGGER.info(gen.serialize(myJobs));
+		
+	}
+	public void testSPRegister(){
 		ApplicationContext cxt = new ClassPathXmlApplicationContext("classpath:springConfig.xml");
 		//SELECT THE DEFINED USER SERVICE FROM SERVICEIMPL
 	    //UserServiceImpl service =  (UserServiceImpl)cxt.getBean("userService");
@@ -40,17 +62,36 @@ public class Test {
 	    
 	    List<ServiceProvider> test = service.getServiceProviders();
 	    System.out.println(test.hashCode());
-//		User ins = new User();
-//		ins.setId(2);
-//		ins.setFirstName("TestFirst");
-//		ins.setLastName("TestLast");
-//		ins.setEmail("thisisatest@gmail.com");
-//		
-//		
-//		
-//		service.updateUser(ins);
-//		List<User> test = service.getAllUsers();
-//		System.out.println(test.get(1).getEmail());
+	}
+	public static void testJobAdd(){
+		double atlLat = 33.7490;
+		double atlLng = -84.3880;
+		Random r = new Random();
+		for(int i = 0; i<10;i++){
+			double randLat = atlLat+r.nextDouble();
+			double randLng = atlLng+r.nextDouble();
+			
+			GeoLocation geo = new GeoLocation(randLat,randLng,com.lawnbuzz.util.Util.getCurrentDateTime());
+			JobRequest jr = new JobRequest();
+			jr.setComplete(false);
+			jr.setLoc(geo);
+			jr.setService(Service.LAWN_CARE);
+			jr.setLongDescrption("Test Long Description");
+			jr.setShortDescription("Mow my fucking lawn");
+			jr.setPay(r.nextInt(100));
+			LawnBuzzDao.jobService.addJob(jr);
+		}
 		
+	}
+	public static void addRandomJobs(){
+		GeoLocation geo = new GeoLocation(34.00,84.3880,com.lawnbuzz.util.Util.getCurrentDateTime());
+		JobRequest jr = new JobRequest();
+		jr.setComplete(false);
+		jr.setLoc(geo);
+		jr.setService(Service.LAWN_CARE);
+		jr.setLongDescrption("We need someone to edge and mow our lawn");
+		jr.setShortDescription("Mow my fucking lawn");
+		jr.setPay(40.00);
+		LawnBuzzDao.jobService.addJob(jr);
 	}
 }
