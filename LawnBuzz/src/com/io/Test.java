@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.LatLng;
 import com.lawnbuzz.dao.LawnBuzzDao;
 import com.lawnbuzz.models.GeoLocation;
 import com.lawnbuzz.models.JobRequest;
@@ -16,15 +17,15 @@ import com.lawnbuzz.models.Service;
 import com.lawnbuzz.models.ServiceProvider;
 import com.lawnbuzz.serviceimpl.ServiceProviderServiceImpl;
 import com.owlike.genson.Genson;
-
 import com.lawnbuzz.util.Util;
 
 public class Test {
 	static Logger LOGGER = Logger.getLogger(Test.class.getName());
 	
 	public static void main(String[] args){
+	
 		Genson gen = new Genson();
-		ServiceProvider me = LawnBuzzDao.serviceProviderService.getServiceProviders().get(0);
+		ServiceProvider me = LawnBuzzDao.serviceProviderService.getServiceProviderById(1);
 		int radius = 50;
 		GeocodingResult res = LawnBuzzDao.geoService.reverseGeocode(me.getLoc());
 		long start = System.currentTimeMillis();
@@ -32,7 +33,10 @@ public class Test {
 		
 		
 		LOGGER.info("Found "+myJobs.size()+" jobs within "+radius+"miles of "+res.formattedAddress+" in "+Util.getTimeSince(start));
-		LOGGER.info(gen.serialize(myJobs));
+		for(JobRequest job: myJobs){
+			System.out.println(gen.serialize(job));
+		}
+		
 		
 	}
 	public void testSPRegister(){

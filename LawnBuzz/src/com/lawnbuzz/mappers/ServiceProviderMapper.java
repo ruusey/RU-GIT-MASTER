@@ -66,14 +66,22 @@ public interface ServiceProviderMapper {
 	@Update("UPDATE lb.service_provider SET username=#{newUserName} WHERE id=#{id}")
 	public void updateServiceProviderUserName(@Param("id") int id, @Param("newUserName") String newUserName);
 	
-	@Update("UPDATE lb.service_provider SET username=#{newFirstName} WHERE id=#{id}")
+	@Update("UPDATE lb.service_provider SET firstname=#{newFirstName} WHERE id=#{id}")
 	public void updateServiceProviderFirstName(@Param("id") int id, @Param("newFirstName") String newFirstName);
 	
-	@Update("UPDATE lb.service_provider SET username=#{newFirstName} WHERE id=#{id}")
+	@Update("UPDATE lb.service_provider SET lastname=#{newFirstName} WHERE id=#{id}")
 	public void updateServiceProviderLastName(@Param("id") int id, @Param("newLastName") String newLastName);
 	
 	@Update("UPDATE lb.service_provider_geoloc SET lat=#{newLocation.lat},lng=#{newLocation.lng},datetime=#{newLocation.dateTime} WHERE geoloc_id=#{geoloc_id}")
-	public void updateServiceProviderGeoLoc(@Param("geoloc_id") int geoLocId, @Param("loc") GeoLocation newLocation);
+	public void updateServiceProviderGeoLoc(@Param("geoloc_id") int geoLocId, @Param("newLocation") GeoLocation newLocation);
+	
+	@Update("UPDATE lb.service_provider SET rating=#{newRating} id=#{id}")
+	public void updateServiceProviderRating(@Param("id") int id, @Param("newRating") int newRating);
+	
+	@Delete("DELETE FROM lb.service_provider_service WHERE service_id=#{service_id}")
+	public void deleteServiceProviderServices(@Param("service_id") int serviceId);
+		
+	
 	
 	
 	

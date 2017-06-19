@@ -6,14 +6,14 @@ import java.util.List;
 public class ServiceProvider implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private int id;
-	private String email;
-	private String userName;
-	private String firstName;
-	private String lastName;
-	private List<Service> services;
-	private GeoLocation loc;
-	private int rating;
+	private int id=-1;
+	private String email=null;
+	private String userName=null;
+	private String firstName=null;
+	private String lastName=null;
+	private List<Service> services=null;
+	private GeoLocation loc=null;
+	private int rating=-1;
 
 	public ServiceProvider() {
 		super();
