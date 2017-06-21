@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Update;
 
 import com.lawnbuzz.models.GeoLocation;
 import com.lawnbuzz.models.JobRequest;
+import com.lawnbuzz.models.Service;
 
 public interface JobMapper {
 	
@@ -37,6 +38,17 @@ public interface JobMapper {
 			@Result(property = "complete", column = "complete"),
 			@Result(property = "loc", javaType = GeoLocation.class, column = "geoloc_id", many = @Many(select = "getGeoLocJob")) })
 	public List<JobRequest> getAlIncompleteJobs();
+	
+	@Select("SELECT * FROM lb.job WHERE complete=0 AND service=#{service}")
+	@Results(value = {
+			@Result(property = "id", column = "id"),
+			@Result(property = "service", column = "service"),
+			@Result(property = "shortDescription", column = "shortdescription"),
+			@Result(property = "longDescription", column = "longdescription"),
+			@Result(property = "pay", column = "pay"),
+			@Result(property = "complete", column = "complete"),
+			@Result(property = "loc", javaType = GeoLocation.class, column = "geoloc_id", many = @Many(select = "getGeoLocJob")) })
+	public List<JobRequest> getJobsByService(@Param("service") Service service);
 	
 	@Update("UPDATE lb.job SET complete=1 WHERE id=#{id}")
 	public void completeJob(@Param("id") int id);

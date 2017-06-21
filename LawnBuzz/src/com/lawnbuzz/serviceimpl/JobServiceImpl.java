@@ -28,6 +28,7 @@ public class JobServiceImpl implements JobService{
 	public List<JobRequest> getAllIncompleteJobs() {
 		return mapper.getAlIncompleteJobs();
 	}
+	
 	@Override
 	public void addJob(JobRequest jr) {
 		mapper.addJob(jr);
@@ -39,6 +40,10 @@ public class JobServiceImpl implements JobService{
 	@Override
 	public ArrayList<JobRequest> getJobsInRadius(GeoLocation center, int radius) {
 		return LawnBuzzDao.geoService.getJobsInRadius(center, radius);
+	}
+	@Override
+	public List<JobRequest> getJobsByService(com.lawnbuzz.models.Service s) {
+		return mapper.getJobsByService(s);
 	}
 
 }

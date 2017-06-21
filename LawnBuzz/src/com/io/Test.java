@@ -23,19 +23,22 @@ public class Test {
 	static Logger LOGGER = Logger.getLogger(Test.class.getName());
 	
 	public static void main(String[] args){
-	
-		Genson gen = new Genson();
-		ServiceProvider me = LawnBuzzDao.serviceProviderService.getServiceProviderById(1);
-		int radius = 50;
-		GeocodingResult res = LawnBuzzDao.geoService.reverseGeocode(me.getLoc());
-		long start = System.currentTimeMillis();
-		ArrayList<JobRequest> myJobs = new ArrayList<JobRequest>(LawnBuzzDao.geoService.getJobsInRadius(me.getLoc(), radius));
+		
+		 Genson gen = new Genson();
+		 ServiceProvider me =
+		 LawnBuzzDao.serviceProviderService.getServiceProviderById(1);
+		 int radius = 50;
+		 GeocodingResult res =
+		 LawnBuzzDao.geoService.reverseGeocode(me.getLoc());
+		 long start = System.currentTimeMillis();
+		 ArrayList<JobRequest> myJobs = new
+		 ArrayList<JobRequest>(LawnBuzzDao.jobService.getJobsByService(Service.DELIVERY));
 		
 		
-		LOGGER.info("Found "+myJobs.size()+" jobs within "+radius+"miles of "+res.formattedAddress+" in "+Util.getTimeSince(start));
-		for(JobRequest job: myJobs){
-			System.out.println(gen.serialize(job));
-		}
+		 LOGGER.info("Found "+myJobs.size()+" jobs within "+radius+"miles of "+res.formattedAddress+" in "+Util.getTimeSince(start));
+		 for(JobRequest job: myJobs){
+		 System.out.println(gen.serialize(job));
+		 }
 		
 		
 	}
@@ -67,11 +70,11 @@ public class Test {
 	    List<ServiceProvider> test = service.getServiceProviders();
 	    System.out.println(test.hashCode());
 	}
-	public static void testJobAdd(){
+	public static void testJobAdd(int numberOfJobs){
 		double atlLat = 33.7490;
 		double atlLng = -84.3880;
 		Random r = new Random();
-		for(int i = 0; i<10;i++){
+		for(int i = 0; i<numberOfJobs;i++){
 			double randLat = atlLat+r.nextDouble();
 			double randLng = atlLng+r.nextDouble();
 			
@@ -79,7 +82,7 @@ public class Test {
 			JobRequest jr = new JobRequest();
 			jr.setComplete(false);
 			jr.setLoc(geo);
-			jr.setService(Service.LAWN_CARE);
+			jr.setService(Service.values()[r.nextInt(Service.values().length)]);
 			jr.setLongDescrption("Test Long Description");
 			jr.setShortDescription("Mow my fucking lawn");
 			jr.setPay(r.nextInt(100));
