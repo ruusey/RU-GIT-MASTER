@@ -2,7 +2,7 @@ package com.lawnbuzz.models;
 
 import java.io.Serializable;
 
-public class JobRequest implements Serializable{
+public class JobRequest implements Serializable {
 	/**
 	 * 
 	 */
@@ -14,21 +14,32 @@ public class JobRequest implements Serializable{
 	private GeoLocation loc;
 	private double pay;
 	private boolean complete;
+	private int jobId;
 
 	public JobRequest() {
 		super();
 	}
-
-	public JobRequest(int id, Service job, String shortDescription,
-			String longDescrption, GeoLocation loc, double pay, boolean complete) {
+	
+	public JobRequest(int id, Service service, String shortDescription,
+			String longDescription, GeoLocation loc, double pay,
+			boolean complete, int jobId) {
 		super();
 		this.id = id;
-		this.service = job;
+		this.service = service;
 		this.shortDescription = shortDescription;
-		this.longDescription = longDescrption;
+		this.longDescription = longDescription;
 		this.loc = loc;
 		this.pay = pay;
 		this.complete = complete;
+		this.jobId = jobId;
+	}
+
+	public int getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(int jobId) {
+		this.jobId = jobId;
 	}
 
 	public int getId() {

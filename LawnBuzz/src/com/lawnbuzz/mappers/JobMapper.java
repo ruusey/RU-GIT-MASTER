@@ -58,8 +58,8 @@ public interface JobMapper {
 			+ " FROM lb.job_geoloc WHERE geoloc_id = #{geoloc_id}")
 	public GeoLocation getGeoLocJob(int geoLocId);
 	
-	@Insert("INSERT INTO lb.job(service, shortdescription, longdescription, geoloc_id, pay,complete) VALUES"
-			+ "(#{service},#{shortDescription}, #{longDescription}, #{id}, #{pay},0);")
+	@Insert("INSERT INTO lb.job(service, shortdescription, longdescription, geoloc_id, pay,complete,job_id) VALUES"
+			+ "(#{service},#{shortDescription}, #{longDescription}, 0, #{pay},0,#{jobId});")
 	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
 	public void addJob(JobRequest jr);
 	
