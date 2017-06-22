@@ -1,7 +1,6 @@
 package com.lawnbuzz.dao;
 
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +19,7 @@ public class LawnBuzzDao {
 	public static ClientServiceImpl clientService;
 	static{
 		long startTime = System.currentTimeMillis();
-		ApplicationContext cxt = new ClassPathXmlApplicationContext("classpath:springConfig.xml");
+		ClassPathXmlApplicationContext cxt = new ClassPathXmlApplicationContext("classpath:springConfig.xml");
 		LOGGER.info("Initialized LawnBuzzDao class "+cxt.getApplicationName()+" in "+Util.getTimeSince(startTime));
 		LOGGER.info("Registering LawnBuzz services...");
 		
@@ -53,7 +52,7 @@ public class LawnBuzzDao {
 		LOGGER.info("Successfully registered clientService in "+Util.getTimeSince(startTime));
 		
 		LOGGER.info("Successfully Created LawnBuzz DAO");
-
+		cxt.close();
 		
 	}
 }

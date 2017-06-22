@@ -36,4 +36,7 @@ public class ClientServiceImpl implements ClientService{
 		mapper.registerClientGeoLoc(client.getId(), client.getLoc());
 		
 	}
+	public List<JobRequest> getClientJobsById(int clientId){
+		return mapper.getClientJobsById(clientId);
+	}
 }

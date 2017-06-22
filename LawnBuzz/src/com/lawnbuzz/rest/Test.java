@@ -1,4 +1,4 @@
-package com.io;
+package com.lawnbuzz.rest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +25,8 @@ public class Test {
 
 	public static void main(String[] args) {
 		Client me = LawnBuzzDao.clientService.getClientById(1);
-		System.out.println(me);
-		testJobAdd(10,me.getId());
+		List<JobRequest> clientJobs = LawnBuzzDao.clientService.getClientJobsById(me.getId());
+		System.out.println(clientJobs);
 //		Genson gen = new Genson();
 //		ServiceProvider me = LawnBuzzDao.serviceProviderService
 //				.getServiceProviderById(1);

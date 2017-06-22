@@ -1,4 +1,4 @@
-package com.io;
+package com.lawnbuzz.rest;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,7 +34,7 @@ public class API {
 	@GET
 	@Path("/getjobs")
 	@Produces("application/json")
-	public List<JobRequest> getUser(@Context HttpServletRequest request, @DefaultValue("10") @QueryParam("radius") int radius) {
+	public List<JobRequest> getJobs(@Context HttpServletRequest request, @DefaultValue("10") @QueryParam("radius") int radius) {
 		ServiceProvider logged = LawnBuzzDao.serviceProviderService.getServiceProviderById(1);
 		return LawnBuzzDao.jobService.getJobsInRadius(logged.getLoc(), radius);
 				

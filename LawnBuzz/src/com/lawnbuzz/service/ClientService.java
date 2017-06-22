@@ -9,4 +9,5 @@ public interface ClientService {
 	public List<Client> getClients();
 	public Client getClientById(int id);
 	public void registerClient(Client client);
+	public List<JobRequest> getClientJobsById(int clientId);
 }
