@@ -17,6 +17,18 @@ import com.lawnbuzz.models.Service;
 
 public interface JobMapper {
 	
+	
+	@Select("SELECT * FROM lb.job WHERE id=#{id}")
+	@Results(value = {
+			@Result(property = "id", column = "id"),
+			@Result(property = "service", column = "service"),
+			@Result(property = "shortDescription", column = "shortdescription"),
+			@Result(property = "longDescription", column = "longdescription"),
+			@Result(property = "pay", column = "pay"),
+			@Result(property = "complete", column = "complete"),
+			@Result(property = "loc", javaType = GeoLocation.class, column = "geoloc_id", many = @Many(select = "getGeoLocJob")) })
+	public JobRequest getJob(@Param("id") int id);
+	
 	@Select("SELECT * FROM lb.job")
 	@Results(value = {
 			@Result(property = "id", column = "id"),

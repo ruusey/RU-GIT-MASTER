@@ -9,13 +9,10 @@
 
 	<mvc:annotation-driven />
 
-	<context:component-scan base-package="com.lawnbuzz" />
-	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="configLocation" value="classpath:myBatis.xml" />
-	</bean>
+	<context:component-scan base-package="com.lawnbuzz, com.fps" />
 
-	<bean id="dataSource"
+
+	<bean id="dataSource1"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/lb" />
@@ -23,19 +20,44 @@
 		<property name="password" value="" />
 	</bean>
 
-	<tx:annotation-driven transaction-manager="transactionManager" />
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.lawnbuzz.mappers" />
+		<property name="sqlSessionFactoryBeanName" value="cneterSqlSessionFactory" />
+	</bean>
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"
+		name="cneterSqlSessionFactory">
+		<property name="dataSource" ref="dataSource1"></property>
+		
+		<property name="configLocation" value="classpath:myBatis.xml" />
+	</bean>
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="dataSource1" />
 	</bean>
 
-	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
-		<constructor-arg index="0" ref="sqlSessionFactory" />
+
+	<bean id="dataSource2"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/fps" />
+		<property name="username" value="root" />
+		<property name="password" value="" />
 	</bean>
-	
+
+
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-  		<property name="basePackage" value="com.lawnbuzz.mappers" />
+		<property name="basePackage" value="com.fps.mappers" />
+		<property name="sqlSessionFactoryBeanName" value="exSqlSessionFactory" />
 	</bean>
-	
-
+	<bean id="sqlSessionFactoryEx" class="org.mybatis.spring.SqlSessionFactoryBean"
+		name="exSqlSessionFactory">
+		<property name="dataSource" ref="dataSource2"></property>
+		
+		<property name="configLocation" value="classpath:myBatis.xml" />
+	</bean>
+	<bean id="transactionManagerEx"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource2" />
+	</bean>
 </beans>

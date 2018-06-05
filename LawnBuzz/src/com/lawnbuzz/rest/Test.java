@@ -24,9 +24,10 @@ public class Test {
 	static Logger LOGGER = Logger.getLogger(Test.class.getName());
 
 	public static void main(String[] args) {
-		Client me = LawnBuzzDao.clientService.getClientById(1);
-		List<JobRequest> clientJobs = LawnBuzzDao.clientService.getClientJobsById(me.getId());
-		System.out.println(clientJobs);
+		testSPRegister();
+//		Client me = LawnBuzzDao.clientService.getClientById(1);
+//		List<JobRequest> clientJobs = LawnBuzzDao.clientService.getClientJobsById(me.getId());
+//		System.out.println(clientJobs);
 //		Genson gen = new Genson();
 //		ServiceProvider me = LawnBuzzDao.serviceProviderService
 //				.getServiceProviderById(1);
@@ -46,35 +47,27 @@ public class Test {
 
 	}
 
-	public void testSPRegister() {
-		ApplicationContext cxt = new ClassPathXmlApplicationContext(
-				"classpath:springConfig.xml");
-		// SELECT THE DEFINED USER SERVICE FROM SERVICEIMPL
-		// UserServiceImpl service =
-		// (UserServiceImpl)cxt.getBean("userService");
-
-		ServiceProviderServiceImpl service = (ServiceProviderServiceImpl) cxt
-				.getBean("serviceProviderService");
-
+	public static void testSPRegister() {
+		
 		ServiceProvider sp = new ServiceProvider();
-		sp.setEmail("ruusey@gmail.com");
-		sp.setUserName("ruusey");
-		sp.setFirstName("Robert");
+		sp.setEmail("ruusey1@gmail.com");
+		sp.setUserName("rusey");
+		sp.setFirstName("Rob");
 		sp.setLastName("Usey");
 		List<com.lawnbuzz.models.Service> sList = new ArrayList<com.lawnbuzz.models.Service>();
 		sList.add(com.lawnbuzz.models.Service.LAWN_CARE);
 		sList.add(com.lawnbuzz.models.Service.HOME_CARE);
-		GeoLocation geo = new GeoLocation(33.7490, 84.3880,
+		GeoLocation geo = new GeoLocation(34.0007, 81.0348,
 				com.lawnbuzz.util.Util.getCurrentDateTime());
 
 		sp.setServices(sList);
 		sp.setLoc(geo);
 		sp.setRating(0);
 
-		service.registerServiceProvider(sp);
+		LawnBuzzDao.serviceProviderService.registerServiceProvider(sp);
 
-		List<ServiceProvider> test = service.getServiceProviders();
-		System.out.println(test.hashCode());
+		//List<ServiceProvider> test = service.getServiceProviders();
+		//System.out.println(test.hashCode());
 	}
 
 	public static void testJobAdd(int numberOfJobs,int ownerId) {

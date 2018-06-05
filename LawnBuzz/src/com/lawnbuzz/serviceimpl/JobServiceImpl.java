@@ -15,9 +15,9 @@ import com.lawnbuzz.rest.Test;
 import com.lawnbuzz.service.JobService;
 
 @Service("jobService")
-public class JobServiceImpl implements JobService{
+public class JobServiceImpl implements JobService {
 	static Logger LOGGER = Logger.getLogger(JobServiceImpl.class.getName());
-	
+
 	@Autowired
 	private JobMapper mapper;
 	@Override
@@ -28,17 +28,21 @@ public class JobServiceImpl implements JobService{
 	public List<JobRequest> getAllIncompleteJobs() {
 		return mapper.getAlIncompleteJobs();
 	}
-	
+	@Override
+	public JobRequest getJobById(int id) {
+		return mapper.getJob(id);
+	}
 	@Override
 	public void addJob(JobRequest jr) {
 		mapper.addJob(jr);
 		mapper.finalizeJobRegistration(jr.getId());
 		mapper.registerJobGeoLocation(jr.getId(), jr.getLoc());
-		LOGGER.info("Succesfully added job "+jr.getId());
-		
+		LOGGER.info("Succesfully added job " + jr.getId());
+
 	}
 	@Override
-	public ArrayList<JobRequest> getJobsInRadius(GeoLocation center, int radius) {
+	public ArrayList<JobRequest> getJobsInRadius(GeoLocation center,
+			int radius) {
 		return LawnBuzzDao.geoService.getJobsInRadius(center, radius);
 	}
 	@Override
