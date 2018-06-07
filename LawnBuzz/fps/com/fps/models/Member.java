@@ -1,6 +1,7 @@
 package com.fps.models;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -23,10 +24,10 @@ public class Member extends User implements Serializable {
 	public HashMap<Integer,Privledge> privledges;
 	public List<Event> events;
 	
-	public Member(int id, String firstname, String lastname, String phone, Timestamp birth, boolean verified,
+	public Member(int id, String firstname, String lastname, String phone, Date dob, boolean verified,
 			String identifier, String username, double score, int incompleteJobs, HashMap<Integer, Role> roles,
 			HashMap<Integer, Privledge> privledges, List<Event> events) {
-		super(id, firstname, lastname, phone, username, birth, verified);
+		super(id, firstname, lastname, phone, username, dob, verified);
 		this.identifier = identifier;
 		this.username = username;
 		this.score = score;

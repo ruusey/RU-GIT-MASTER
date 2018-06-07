@@ -1,22 +1,20 @@
 package com.fps.models;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class User implements Serializable {
 	
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	public int id;
-	public String firstname;
-	public String lastname;
-	public String phone;
-	public String email;
-	public Timestamp birth;
-	public boolean verified;
+	private int id;
+	private String firstname;
+	private String lastname;
+	private String phone;
+	private String email;
+	private Date dob;
+	private boolean verified;
 	public int getId() {
 		return id;
 	}
@@ -41,11 +39,11 @@ public class User implements Serializable {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	public Timestamp getBirth() {
-		return birth;
+	public Date getDob() {
+		return dob;
 	}
-	public void setBirth(Timestamp birth) {
-		this.birth = birth;
+	public void setBirth(Date dob) {
+		this.dob = dob;
 	}
 	public boolean isVerified() {
 		return verified;
@@ -61,7 +59,7 @@ public class User implements Serializable {
 		this.email = email;
 	}
 	
-	public User(int id, String firstname, String lastname, String phone, String email, Timestamp birth,
+	public User(int id, String firstname, String lastname, String phone, String email, Date dob,
 			boolean verified) {
 		super();
 		this.id = id;
@@ -69,11 +67,11 @@ public class User implements Serializable {
 		this.lastname = lastname;
 		this.phone = phone;
 		this.email = email;
-		this.birth = birth;
+		this.dob = dob;
 		this.verified = verified;
 	}
 	public User() {
-		
+		super();
 	}
 	
 }

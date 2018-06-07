@@ -30,6 +30,17 @@ public class FPUserServiceImpl implements FPUserService {
 		
 	}
 
+	@Override
+	public User getFpUserById(int id) {
+		User res = null;
+		try {
+			res= mapper.getFpUserById(id);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	
 	
 

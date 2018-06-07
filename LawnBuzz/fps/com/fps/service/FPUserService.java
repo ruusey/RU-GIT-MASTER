@@ -5,4 +5,5 @@ import com.fps.models.User;
 
 public interface FPUserService {
 	public void registerFPUser(User user);
+	public User getFpUserById(int id);
 }
