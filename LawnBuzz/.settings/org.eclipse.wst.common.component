@@ -7,6 +7,6 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/fps"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/resources"/>
         <property name="java-output-path" value="/IO/build/classes"/>
-        <property name="context-root" value="LawnBuzz"/>
+        <property name="context-root" value="FPS"/>
     </wb-module>
 </project-modules>
