@@ -1,0 +1,11 @@
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `firstname` varchar(45) DEFAULT 'null',
+  `lastname` varchar(45) DEFAULT 'null',
+  `dob` date DEFAULT NULL,
+  `phone` varchar(45) DEFAULT 'null',
+  `email` varchar(45) DEFAULT 'null',
+  `verified` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=190 DEFAULT CHARSET=latin1;
