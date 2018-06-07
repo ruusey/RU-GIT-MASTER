@@ -1,5 +1,8 @@
 package com.fps.testbed;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -18,26 +21,50 @@ public class FPServiceTestbed {
 		ClassPathXmlApplicationContext cxt = new ClassPathXmlApplicationContext("classpath:springConfig.xml");
 		LOGGER.info(
 				"Initialized FPS class " + cxt.getApplicationName() + " in " + Util.getTimeSince(startTime));
-		
 		LOGGER.info("Registering FPS services...");
 		startTime = System.currentTimeMillis();
 		fpUserService = (FPUserServiceImpl) cxt.getBean("fpUserService");
 		LOGGER.info("Successfully registered fpUserService in " + Util.getTimeSince(startTime));
-		
 		LOGGER.info("Successfully Created FPS DAO");
-		System.out.println();
-		testGetFpUserById(1);
+		
+		//*************
+		//TESTING
+		//*************
+		
+		//testGetFpUserById(1);
+		//testRegisterFpUser();
+		testGetAllFpUsers();
 		cxt.close();
 	}
-	public R  testGetFpUserById(int id) {
+	public static void  testGetFpUserById(int id) {
 		LOGGER.info("Testing getFpUserById");
-		User result = fpUserService.getFpUserById(1);
-		if(result!=null) {
-			LOGGER.info("Successfully Retrieved User!");
-			LOGGER.info(gen.serialize(result));
-		}else {
-			LOGGER.error("Error Retrieving User!");
-			LOGGER.error(gen.serialize(result));
+		User result = fpUserService.getUserById(1);
+		LOGGER.info(gen.serialize(result));
+	}
+	public static void testRegisterFpUser() {
+		ArrayList<User> users=null;
+		try {
+			users = DataMock.generateRandomUsers();
+			for(User user:users) {
+				int id = fpUserService.registerUser(user);
+				LOGGER.info("Added User("+id+") " + gen.serialize(user));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void testGetAllFpUsers() {
+		ArrayList<User> users=null;
+		try {
+			users = DataMock.generateRandomUsers();
+			for(User user:fpUserService.getAllUsers()) {
+				//int id = fpUserService.registerUser(user);
+				LOGGER.info("Found Existing User - "+gen.serialize(user));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

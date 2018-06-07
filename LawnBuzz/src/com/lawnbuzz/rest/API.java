@@ -32,7 +32,7 @@ public class API {
 	@Produces("application/json")
 	public void registerFpUser(@Context HttpServletRequest request, User user) {
 		System.out.println("here");
-		LawnBuzzDao.fpUserService.registerFPUser(user);
+		LawnBuzzDao.fpUserService.registerUser(user);
 		
 				
 		
@@ -42,7 +42,7 @@ public class API {
 	@Produces("application/json")
 	public User getFpUser(@Context HttpServletRequest request, @QueryParam("id") int id) {
 		System.out.println("here");
-		return LawnBuzzDao.fpUserService.getFpUserById(id);
+		return LawnBuzzDao.fpUserService.getUserById(id);
 		
 				
 		

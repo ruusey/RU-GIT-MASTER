@@ -1,5 +1,7 @@
 package com.fps.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,42 +10,52 @@ import com.fps.models.Response;
 import com.fps.models.User;
 import com.fps.service.FPUserService;
 
-
-
 @Service("fpUserService")
 public class FPUserServiceImpl implements FPUserService {
 	@Autowired
 	private FPUserMapper mapper;
 
 	@Override
-	public void registerFPUser(User user) {
-		Response res = new Response(0, null);
+	public int registerUser(User user) {
+		int id = -1;
 		try {
-			mapper.registerFPUser(user);
-			res.setMsg("Succesfully added user!");
-			res.setStatus(400);
-		}catch(Exception e){
+			
+			id= mapper.registerFPUser(user);
+			
+		} catch (Exception e) {
 			e.printStackTrace();
-			res.setMsg("Error adding user!");
-			res.setStatus(500);
+			
 		}
-		
+		return id;
+
 	}
 
 	@Override
-	public User getFpUserById(int id) {
+	public User getUserById(int id) {
 		User res = null;
 		try {
-			res= mapper.getFpUserById(id);
-		}catch(Exception e) {
+			res = mapper.getFpUserById(id);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return res;
+	}
+
+	@Override
+	public List<User> getAllUsers() {
+		return mapper.getFpUsersAll();
+	}
+
+	@Override
+	public Response deleteUser(int id) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
-	
-	
-
-	
+	@Override
+	public Response updateUser(User newUser) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
