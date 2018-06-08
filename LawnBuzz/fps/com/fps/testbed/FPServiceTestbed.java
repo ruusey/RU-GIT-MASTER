@@ -56,16 +56,16 @@ public class FPServiceTestbed {
 	}
 	public static void testGetAllFpUsers() {
 		ArrayList<User> users=null;
-		try {
-			users = DataMock.generateRandomUsers();
-			for(User user:fpUserService.getAllUsers()) {
-				//int id = fpUserService.registerUser(user);
-				LOGGER.info("Found Existing User - "+gen.serialize(user));
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		//users = DataMock.generateRandomUsers();
+		for(User user:fpUserService.getAllUsers()) {
+			//int id = fpUserService.registerUser(user);
+			LOGGER.info("Found Existing User - "+gen.serialize(user));
 		}
+	}
+	public static void testSeparator() {
+		System.out.println();
+		System.out.println("##########################TEST COMPLETE############################");
+		System.out.println();
 	}
 
 }
