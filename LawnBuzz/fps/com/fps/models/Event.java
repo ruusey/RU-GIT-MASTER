@@ -1,26 +1,38 @@
 package com.fps.models;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.fps.constants.EventType;
 import com.fps.constants.Outcome;
 import com.fps.constants.Requirement;
 
-public class Event {
-	public int id;
+public class Event implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public int eventId;
+	public Date date;
 	public EventType type;
-	public Timestamp date;
-	public List<Member> members;
+	public List<Integer> memberIds;
 	boolean completed;
-	public HashMap<Member,Requirement> reqs;
-	public HashMap<Member,Outcome> outcomes;
-	public int getId() {
-		return id;
+	public Map<Integer,Requirement> memberRequirements;
+	public Map<Integer,Outcome> memberOutcomes;
+	public int getEventId() {
+		return eventId;
 	}
-	public void setId(int id) {
-		this.id = id;
+	public void setEventId(int eventId) {
+		this.eventId = eventId;
+	}
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
 	}
 	public EventType getType() {
 		return type;
@@ -28,17 +40,11 @@ public class Event {
 	public void setType(EventType type) {
 		this.type = type;
 	}
-	public Timestamp getDate() {
-		return date;
+	public List<Integer> getMemberIds() {
+		return memberIds;
 	}
-	public void setDate(Timestamp date) {
-		this.date = date;
-	}
-	public List<Member> getMembers() {
-		return members;
-	}
-	public void setMembers(List<Member> members) {
-		this.members = members;
+	public void setMemberIds(List<Integer> memberIds) {
+		this.memberIds = memberIds;
 	}
 	public boolean isCompleted() {
 		return completed;
@@ -46,28 +52,30 @@ public class Event {
 	public void setCompleted(boolean completed) {
 		this.completed = completed;
 	}
-	public HashMap<Member, Requirement> getReqs() {
-		return reqs;
+	public Map<Integer, Requirement> getMemberRequirements() {
+		return memberRequirements;
 	}
-	public void setReqs(HashMap<Member, Requirement> reqs) {
-		this.reqs = reqs;
+	public void setMemberRequirements(Map<Integer, Requirement> memberRequirements) {
+		this.memberRequirements = memberRequirements;
 	}
-	public HashMap<Member, Outcome> getOutcomes() {
-		return outcomes;
+	public Map<Integer, Outcome> getMemberOutcomes() {
+		return memberOutcomes;
 	}
-	public void setOutcomes(HashMap<Member, Outcome> outcomes) {
-		this.outcomes = outcomes;
+	public void setMemberOutcomes(Map<Integer, Outcome> memberOutcomes) {
+		this.memberOutcomes = memberOutcomes;
 	}
-	public Event(int id, EventType type, Timestamp date, List<Member> members, boolean completed,
-			HashMap<Member, Requirement> reqs, HashMap<Member, Outcome> outcomes) {
+	public Event(int eventId, Date date, EventType type, List<Integer> memberIds, boolean completed,
+			Map<Integer, Requirement> memberRequirements, Map<Integer, Outcome> memberOutcomes) {
 		super();
-		this.id = id;
-		this.type = type;
+		this.eventId = eventId;
 		this.date = date;
-		this.members = members;
+		this.type = type;
+		this.memberIds = memberIds;
 		this.completed = completed;
-		this.reqs = reqs;
-		this.outcomes = outcomes;
+		this.memberRequirements = memberRequirements;
+		this.memberOutcomes = memberOutcomes;
 	}
-	
+	public Event() {
+		super();
+	}
 }

@@ -9,4 +9,10 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
     <setting name="logImpl" value="LOG4J"/>
    
   </settings>
+  <typeHandlers>
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="com.fps.constants.EventType"/>
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="com.fps.constants.Requirement"/>
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="com.fps.constants.Role"/>
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="com.fps.constants.Outcome"/>
+</typeHandlers>
 </configuration>

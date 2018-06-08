@@ -1,21 +1,20 @@
 package com.fps.models;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 
 import com.fps.constants.Privledge;
 import com.fps.constants.Role;
 
-public class Member extends User implements Serializable {
+public class Member implements Serializable {
 	
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public int userId;
 	public String identifier;
 	public String username;
 	public double score;
@@ -24,16 +23,17 @@ public class Member extends User implements Serializable {
 	public HashMap<Integer,Privledge> privledges;
 	public List<Event> events;
 	
-	public Member(int id, String firstname, String lastname, String phone, Date dob, boolean verified,
-			String identifier, String username, double score, int incompleteJobs, HashMap<Integer, Role> roles,
-			HashMap<Integer, Privledge> privledges, List<Event> events) {
-		super(id, firstname, lastname, phone, username, dob, verified);
-		this.identifier = identifier;
-		this.username = username;
-		this.score = score;
-		this.incompleteJobs = incompleteJobs;
-		this.roles = roles;
-		this.privledges = privledges;
+	
+	public int getUserId() {
+		return userId;
+	}
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+	public List<Event> getEvents() {
+		return events;
+	}
+	public void setEvents(List<Event> events) {
 		this.events = events;
 	}
 	public String getIdentifier() {
