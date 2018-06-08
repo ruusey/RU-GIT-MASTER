@@ -7,7 +7,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.fps.constants.Outcome;
 import com.fps.constants.Requirement;
+import com.fps.constants.Role;
 import com.fps.models.User;
 import com.fps.service.impl.FPEventServiceImpl;
 import com.fps.service.impl.FPUserServiceImpl;
@@ -46,15 +48,17 @@ public class FPServiceTestbed {
 		//testGetFpUserById(1);
 		//testRegisterFpUser();
 		//testGetAllFpUsers();
-		//testGetUserIdsByEvent(1);
-		testGetUserEventRequirements(1,1);
+		testGetUserIdsByEvent(1);
+		//testGetUserEventRequirements(1,1);
+		//testAddUserEventRequirement(1,1,Requirement.CompleteByDeadline);
+		//testGetUserEventRequirements(1,1);
+		//testGetUserEventOutcomes(1,1);
 		cxt.close();
 	}
-	public static User  testGetFpUserById(int id) {
-		LOGGER.info("Testing getFpUserById");
-		User result = fpUserService.getUserById(1);
-		LOGGER.info(gen.serialize(result));
-		return result;
+	public static void testGetFpUserById(int id) {
+		
+		User result = fpUserService.getUserById(id);
+		display(result);
 	}
 	public static void testRegisterFpUser() {
 		ArrayList<User> users=null;
@@ -82,14 +86,23 @@ public class FPServiceTestbed {
 		List<Integer> ids = fpEventService.getUserIdsByEvent(eventId);
 		
 		display(ids);
-		display(testGetFpUserById(ids.get(0)));
+		testGetFpUserById(ids.get(0));
 		
 	}
 	public static void testGetUserEventRequirements(int eventId, int userId) {
 		List<Requirement> reqs=fpEventService.getUserEventRequirements(eventId, userId);
 		display(reqs);
 	}
-	
+	public static void testGetUserEventOutcomes(int eventId, int userId) {
+		List<Outcome> reqs=fpEventService.getUserEventOutcomes(eventId, userId);
+		display(reqs);
+	}
+	public static void testAddUserEventOutcome(int eventId, int userId, Outcome outcome) {
+		fpEventService.addEventMemberOutcome(eventId, userId, outcome);
+	}
+	public static void testAddUserEventRequirement(int eventId, int userId, Requirement requirement) {
+		fpEventService.addEventMemberRequirement(eventId, userId, requirement);
+	}
 	public static void display(Object o) {
 		System.out.println();
 		System.out.println("##########################QUERY_RESULT############################");
@@ -97,5 +110,6 @@ public class FPServiceTestbed {
 		System.out.println("##################################################################");
 		System.out.println();
 	}
+	
 
 }
