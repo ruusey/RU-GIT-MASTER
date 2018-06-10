@@ -13,6 +13,7 @@ import com.fps.constants.Requirement;
 import com.fps.constants.Role;
 import com.fps.models.Event;
 import com.fps.models.Member;
+import com.fps.service.impl.FPCalendarServiceImpl;
 import com.fps.service.impl.FPEventServiceImpl;
 import com.fps.service.impl.FPMemberServiceImpl;
 import com.google.gson.Gson;
@@ -24,6 +25,7 @@ import com.owlike.genson.GensonBuilder;
 public class FPServiceTestbed {
 	public static FPMemberServiceImpl fpMemberService;
 	public static FPEventServiceImpl fpEventService;
+	public static FPCalendarServiceImpl fpCalendarService;
 	static Gson gson = new Gson();  
 	static Logger LOGGER = Logger.getLogger(LawnBuzzDao.class.getName());
 	public static void main(String[] args) {
@@ -42,6 +44,11 @@ public class FPServiceTestbed {
 		startTime = System.currentTimeMillis();
 		fpEventService = (FPEventServiceImpl) cxt.getBean("fpEventService");
 		LOGGER.info("Successfully registered fpEventService in " + Util.getTimeSince(startTime));
+		
+		startTime = System.currentTimeMillis();
+		fpCalendarService = (FPCalendarServiceImpl) cxt.getBean("fpCalendarService");
+		LOGGER.info("Successfully registered fpCalendarService in " + Util.getTimeSince(startTime));
+		
 		LOGGER.info("Successfully Initialized FPS DAO");
 		
 		//*************
@@ -49,8 +56,12 @@ public class FPServiceTestbed {
 		//*************
 		//testGetEventById(1);
 		//testGetFpUserById(2);
-		fpMemberService.updateMemberDeleted(2, false);
-		testGetFpUserById(2);
+		
+		display(fpCalendarService.getCalendarById(1));
+		List<Integer> events = fpCalendarService.getCalendarEventsById(1);
+		Event e = fpEventService.getEventById(events.get(0));
+		display(e);
+		
 		//testRegisterFpUser();
 		//testGetAllFpUsers();
 		//testGetUserIdsByEvent(1);

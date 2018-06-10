@@ -8,20 +8,25 @@ import com.fps.models.Event;
 
 public interface FPCalendarService {
 	public int addCalendar(Calendar calendar);
-	public Calendar getCalendar(int calendarId);
+
+	public Calendar getCalendarById(int calendarId);
+
 	public List<Calendar> getAllCalendars();
-	
-	
-	public int addCalendarMember(int calendarId,int userId);
-	public int addCalendarMemberRole(int calendarId,int userId, Role role);
-	
-	public int removeCalendarMember(int calendarId,int userId);
-	public int removeCalendarMemberRole(int calendarId,int userId,Role role);
-	
-	public int addCalendarEvent(int calendarId, Event event);
+
+	public int addCalendarMember(int calendarId, int userId);
+
+	public int removeCalendarMember(int calendarId, int userId);
+
 	public int addCalendarEvent(int calendarId, int eventId);
-	
-	public int removeCalendarEvent(int calendarId, Event event);
+
 	public int removeCalendarEvent(int calendarId, int eventId);
-		
+
+	public List<Integer> getCalendarEventsById(int calendarId);
+
+	public List<Integer> getCalendarMembersById(int calendarId);
+
+	// ********************************
+	// INSERT STATEMENTS
+	// ********************************
+
 }
