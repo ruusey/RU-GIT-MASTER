@@ -48,12 +48,19 @@ public interface FPCalendarMapper {
 	@Select("SELECT user_id FROM calendar_member WHERE calendar_id=#{calendar_id}")
 	@Results(value = { @Result(property = "user_id", javaType = Integer.class, column = "user_id") })
 	public List<Integer> getCalendarMembersById(@Param("calendar_id") int calendarId);
+	
+	@Select("SELECT role FROM calendar_member_role WHERE calendar_id=#{calendar_id} AND user_id=#{user_id}")
+	@Results(value = { @Result(property = "role", javaType = Role.class, column = "role") })
+	public List<Role> getCalendarMembersRoleById(@Param("calendar_id") int calendarId,@Param("user_id") int userId);
 
 	// ********************************
 	// INSERT STATEMENTS
 	// ********************************
 	@Insert("INSERT INTO calendar_member (calendar_id,user_id) VALUES (" + "#{calendar_id},#{user_id})")
 	public int addCalendarMember(@Param("calendar_id") int calendarId, @Param("user_id") int userId);
+	
+	@Insert("INSERT INTO calendar_member_role (calendar_id,user_id,role) VALUES (" + "#{calendar_id},#{user_id},#{role})")
+	public int addCalendarMemberRole(@Param("calendar_id") int calendarId, @Param("user_id") int userId,@Param("role") Role role);
 
 	@Insert("INSERT INTO calendar_event (calendar_id,event_id) VALUES (" + "#{calendar_id},#{event_id})")
 	public int addCalendarEvent(@Param("calendar_id") int calendarId, @Param("event_id") int eventId);
@@ -71,5 +78,8 @@ public interface FPCalendarMapper {
 	
 	@Delete("DELETE FROM calendar_event WHERE calendar_id=#{calendar_id} AND user_id=#{user_id}")
 	public int removeCalendarMember(@Param("calendar_id") int calendarId, @Param("user_id") int userId);
+	
+	@Delete("DELETE FROM calendar_member_role WHERE calendar_id=#{calendar_id } AND user_id=#{user_id} AND role=#{role}")
+	public int removeCalendarMemberRole(@Param("calendar_id") int calendarId, @Param("user_id") int userId,@Param("role") Role role);
 
 }

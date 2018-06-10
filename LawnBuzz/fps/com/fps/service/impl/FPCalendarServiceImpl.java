@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fps.constants.Role;
 import com.fps.mappers.FPCalendarMapper;
 import com.fps.models.Calendar;
 import com.fps.service.FPCalendarService;
@@ -57,6 +58,21 @@ public class FPCalendarServiceImpl implements FPCalendarService {
 	@Override
 	public List<Integer> getCalendarMembersById(int calendarId) {
 		return mapper.getCalendarMembersById(calendarId);
+	}
+
+	@Override
+	public int addCalendarMemberRole(int calendarId, int userId, Role role) {
+		return mapper.addCalendarMemberRole(calendarId, userId, role);
+	}
+
+	@Override
+	public int removeCalendarMemberRole(int calendarId, int userId, Role role) {
+		return mapper.removeCalendarMemberRole(calendarId, userId, role);
+	}
+
+	@Override
+	public List<Role> getCalendarMembersRoleById(int calendarId, int userId) {
+		return mapper.getCalendarMembersRoleById(calendarId, userId);
 	}
 
 }

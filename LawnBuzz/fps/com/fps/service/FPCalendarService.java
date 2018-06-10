@@ -24,7 +24,12 @@ public interface FPCalendarService {
 	public List<Integer> getCalendarEventsById(int calendarId);
 
 	public List<Integer> getCalendarMembersById(int calendarId);
+	
+	public int addCalendarMemberRole(int calendarId, int userId, Role role);
 
+	public int removeCalendarMemberRole(int calendarId, int userId, Role role);
+
+	public List<Role> getCalendarMembersRoleById(int calendarId, int userId);
 	// ********************************
 	// INSERT STATEMENTS
 	// ********************************
