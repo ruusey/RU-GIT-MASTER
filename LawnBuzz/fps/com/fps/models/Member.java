@@ -22,8 +22,31 @@ public class Member implements Serializable {
 	public HashMap<Integer, Role> roles;
 	public HashMap<Integer,Privledge> privledges;
 	public List<Event> events;
+	public User user;
 	
+	public Member() {
+		super();
+	}
 	
+	public Member(int userId, String identifier, String username, double score, int incompleteJobs,
+			HashMap<Integer, Role> roles, HashMap<Integer, Privledge> privledges, List<Event> events, User user) {
+		super();
+		this.userId = userId;
+		this.identifier = identifier;
+		this.username = username;
+		this.score = score;
+		this.incompleteJobs = incompleteJobs;
+		this.roles = roles;
+		this.privledges = privledges;
+		this.events = events;
+		this.user = user;
+	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
 	public int getUserId() {
 		return userId;
 	}

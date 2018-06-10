@@ -2,6 +2,7 @@ package com.fps.testbed;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -10,9 +11,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.fps.constants.Outcome;
 import com.fps.constants.Requirement;
 import com.fps.constants.Role;
+import com.fps.models.Event;
 import com.fps.models.User;
 import com.fps.service.impl.FPEventServiceImpl;
 import com.fps.service.impl.FPUserServiceImpl;
+import com.google.gson.Gson;
 import com.lawnbuzz.dao.LawnBuzzDao;
 import com.lawnbuzz.util.Util;
 import com.owlike.genson.Genson;
@@ -21,7 +24,7 @@ import com.owlike.genson.GensonBuilder;
 public class FPServiceTestbed {
 	public static FPUserServiceImpl fpUserService;
 	public static FPEventServiceImpl fpEventService;
-	public static Genson gen = new GensonBuilder().setSkipNull(true).create();
+	static Gson gson = new Gson();  
 	static Logger LOGGER = Logger.getLogger(LawnBuzzDao.class.getName());
 	public static void main(String[] args) {
 		
@@ -44,16 +47,28 @@ public class FPServiceTestbed {
 		//*************
 		//TESTING
 		//*************
-		
+		testGetEventById(1);
 		//testGetFpUserById(1);
 		//testRegisterFpUser();
 		//testGetAllFpUsers();
-		testGetUserIdsByEvent(1);
+		//testGetUserIdsByEvent(1);
 		//testGetUserEventRequirements(1,1);
 		//testAddUserEventRequirement(1,1,Requirement.CompleteByDeadline);
 		//testGetUserEventRequirements(1,1);
 		//testGetUserEventOutcomes(1,1);
 		cxt.close();
+	}
+	
+public static void testGetEventById(int id) {
+		
+		Event result = fpEventService.getEventById(id);
+		display(result);
+		for(int i : result.memberIds) {
+			testGetFpUserById(i);
+			testGetUserEventRequirements(result.eventId,i);
+			testRemoveUserEventRequirement(result.eventId,i,Requirement.ArriveOnTime);
+			testGetUserEventRequirements(result.eventId,i);
+		}
 	}
 	public static void testGetFpUserById(int id) {
 		
@@ -66,7 +81,7 @@ public class FPServiceTestbed {
 			users = DataMock.generateRandomUsers();
 			for(User user:users) {
 				int id = fpUserService.registerUser(user);
-				LOGGER.info("Added User("+id+") " + gen.serialize(user));
+				//LOGGER.info("Added User("+id+") " + gen.serialize(user));
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -74,12 +89,10 @@ public class FPServiceTestbed {
 		}
 	}
 	public static void testGetAllFpUsers() {
-		ArrayList<User> users=null;
+		List<User> users=null;
 		//users = DataMock.generateRandomUsers();
-		for(User user:fpUserService.getAllUsers()) {
-			//int id = fpUserService.registerUser(user);
-			LOGGER.info("Found Existing User - "+gen.serialize(user));
-		}
+		users=fpUserService.getAllUsers();
+		display(users);
 	}
 	
 	public static void testGetUserIdsByEvent(int eventId) {
@@ -103,10 +116,16 @@ public class FPServiceTestbed {
 	public static void testAddUserEventRequirement(int eventId, int userId, Requirement requirement) {
 		fpEventService.addEventMemberRequirement(eventId, userId, requirement);
 	}
+	public static void testRemoveUserEventOutcome(int eventId, int userId, Outcome outcome) {
+		fpEventService.removeEventMemberOutcome(eventId, userId, outcome);
+	}
+	public static void testRemoveUserEventRequirement(int eventId, int userId, Requirement requirement) {
+		fpEventService.removeEventMemberRequirement(eventId, userId, requirement);
+	}
 	public static void display(Object o) {
 		System.out.println();
 		System.out.println("##########################QUERY_RESULT############################");
-		System.out.println(gen.serialize(o));
+		System.out.println(gson.toJson(o));
 		System.out.println("##################################################################");
 		System.out.println();
 	}

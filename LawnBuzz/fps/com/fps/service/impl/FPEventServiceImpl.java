@@ -1,5 +1,6 @@
 package com.fps.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +24,14 @@ public class FPEventServiceImpl implements FPEventService {
 	}
 
 	@Override
-	public int registerEvent(Event event) {
+	public int addEvent(Event event) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public Event getEventById(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		return mapper.getEventById(id);
 	}
 
 	@Override
@@ -57,20 +57,76 @@ public class FPEventServiceImpl implements FPEventService {
 
 	@Override
 	public void addEventMemberRole(int eventId, int userId, Role role) {
-		mapper.createEventRole(eventId, userId, role);
+		mapper.addEventMemberRole(eventId, userId, role);
 
 	}
 
 	@Override
 	public void addEventMemberOutcome(int eventId, int userId, Outcome outcome) {
-		mapper.createEventOutcome(eventId, userId, outcome);
+		mapper.addEventMemberOutcome(eventId, userId, outcome);
 
 	}
 
 	@Override
 	public void addEventMemberRequirement(int eventId, int userId, Requirement requirement) {
-		mapper.createEventRequirement(eventId, userId, requirement);
+		mapper.addEventMemberRequirement(eventId, userId, requirement);
 
 	}
+
+	@Override
+	public void removeEventMemberRole(int eventId, int userId, Role role) {
+		mapper.removeEventMemberRole(eventId, userId, role);
+		
+	}
+
+	@Override
+	public void removeEventMemberOutcome(int eventId, int userId, Outcome outcome) {
+		mapper.removeEventMemberOutcome(eventId, userId, outcome);
+		
+	}
+
+	@Override
+	public void removeEventMemberRequirement(int eventId, int userId, Requirement requirement) {
+		mapper.removeEventMemberRequirement(eventId, userId, requirement);
+		
+	}
+
+	@Override
+	public void addEventMemeber(int eventId, int userId) {
+		mapper.addEventMember(eventId, userId);
+		
+	}
+
+	@Override
+	public void updateEventDate(int eventId, Date date) {
+		mapper.updateEventDate(eventId, date);
+		
+	}
+
+	@Override
+	public void updateEventType(int eventId, EventType type) {
+		mapper.updateEventType(eventId, type);
+		
+	}
+
+	@Override
+	public void updateEventCompleted(int eventId, boolean completed) {
+		mapper.updateEventCompleted(eventId, completed);
+		
+	}
+
+	@Override
+	public void updateEventDescription(int eventId, String description) {
+		mapper.updateEventDescription(eventId, description);
+		
+	}
+
+	@Override
+	public void updateEventDeleted(int eventId, boolean deleted) {
+		mapper.updateEventDeleted(eventId, deleted);
+		
+	}
+
+
 
 }

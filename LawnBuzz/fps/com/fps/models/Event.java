@@ -15,13 +15,14 @@ public class Event implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public int id;
 	public int eventId;
 	public Date date;
 	public EventType type;
 	public List<Integer> memberIds;
+	public String description;
 	boolean completed;
-	public Map<Integer,Requirement> memberRequirements;
-	public Map<Integer,Outcome> memberOutcomes;
+	
 	public int getEventId() {
 		return eventId;
 	}
@@ -52,30 +53,32 @@ public class Event implements Serializable{
 	public void setCompleted(boolean completed) {
 		this.completed = completed;
 	}
-	public Map<Integer, Requirement> getMemberRequirements() {
-		return memberRequirements;
+	public int getId() {
+		return id;
 	}
-	public void setMemberRequirements(Map<Integer, Requirement> memberRequirements) {
-		this.memberRequirements = memberRequirements;
+	public void setId(int id) {
+		this.id = id;
 	}
-	public Map<Integer, Outcome> getMemberOutcomes() {
-		return memberOutcomes;
+	
+	public String getDescription() {
+		return description;
 	}
-	public void setMemberOutcomes(Map<Integer, Outcome> memberOutcomes) {
-		this.memberOutcomes = memberOutcomes;
+	public void setDescription(String description) {
+		this.description = description;
 	}
-	public Event(int eventId, Date date, EventType type, List<Integer> memberIds, boolean completed,
-			Map<Integer, Requirement> memberRequirements, Map<Integer, Outcome> memberOutcomes) {
+	
+	public Event(int id, int eventId, Date date, EventType type, List<Integer> memberIds, String description,
+			boolean completed) {
 		super();
+		this.id = id;
 		this.eventId = eventId;
 		this.date = date;
 		this.type = type;
 		this.memberIds = memberIds;
+		this.description = description;
 		this.completed = completed;
-		this.memberRequirements = memberRequirements;
-		this.memberOutcomes = memberOutcomes;
 	}
 	public Event() {
-		super();
+		
 	}
 }
