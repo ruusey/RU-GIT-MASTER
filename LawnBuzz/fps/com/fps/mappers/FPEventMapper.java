@@ -33,6 +33,7 @@ public interface FPEventMapper {
 
 	@Insert("INSERT INTO member_event_outcome (event_id,user_id,outcome) VALUES ("
 			+ "#{event_id},#{user_id},#{outcome})")
+	
 	public void addEventMemberOutcome(@Param("event_id") int eventId, @Param("user_id") int userId,
 			@Param("outcome") Outcome outcome);
 	
