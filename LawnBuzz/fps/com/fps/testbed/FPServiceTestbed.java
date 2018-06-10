@@ -12,9 +12,9 @@ import com.fps.constants.Outcome;
 import com.fps.constants.Requirement;
 import com.fps.constants.Role;
 import com.fps.models.Event;
-import com.fps.models.User;
+import com.fps.models.Member;
 import com.fps.service.impl.FPEventServiceImpl;
-import com.fps.service.impl.FPUserServiceImpl;
+import com.fps.service.impl.FPMemberServiceImpl;
 import com.google.gson.Gson;
 import com.lawnbuzz.dao.LawnBuzzDao;
 import com.lawnbuzz.util.Util;
@@ -22,7 +22,7 @@ import com.owlike.genson.Genson;
 import com.owlike.genson.GensonBuilder;
 
 public class FPServiceTestbed {
-	public static FPUserServiceImpl fpUserService;
+	public static FPMemberServiceImpl fpMemberService;
 	public static FPEventServiceImpl fpEventService;
 	static Gson gson = new Gson();  
 	static Logger LOGGER = Logger.getLogger(LawnBuzzDao.class.getName());
@@ -34,7 +34,7 @@ public class FPServiceTestbed {
 				"Initialized FPS class " + cxt.getApplicationName() + " in " + Util.getTimeSince(startTime));
 		LOGGER.info("Registering FPS services...");
 		startTime = System.currentTimeMillis();
-		fpUserService = (FPUserServiceImpl) cxt.getBean("fpUserService");
+		fpMemberService = (FPMemberServiceImpl) cxt.getBean("fpMemberService");
 		LOGGER.info("Successfully registered fpUserService in " + Util.getTimeSince(startTime));
 		
 		
@@ -47,8 +47,10 @@ public class FPServiceTestbed {
 		//*************
 		//TESTING
 		//*************
-		testGetEventById(1);
-		//testGetFpUserById(1);
+		//testGetEventById(1);
+		//testGetFpUserById(2);
+		fpMemberService.updateMemberDeleted(2, false);
+		testGetFpUserById(2);
 		//testRegisterFpUser();
 		//testGetAllFpUsers();
 		//testGetUserIdsByEvent(1);
@@ -72,15 +74,15 @@ public static void testGetEventById(int id) {
 	}
 	public static void testGetFpUserById(int id) {
 		
-		User result = fpUserService.getUserById(id);
+		Member result = fpMemberService.getMemberById(id);
 		display(result);
 	}
 	public static void testRegisterFpUser() {
-		ArrayList<User> users=null;
+		ArrayList<Member> users=null;
 		try {
 			users = DataMock.generateRandomUsers();
-			for(User user:users) {
-				int id = fpUserService.registerUser(user);
+			for(Member user:users) {
+				int id = fpMemberService.addMember(user);
 				//LOGGER.info("Added User("+id+") " + gen.serialize(user));
 			}
 		} catch (IOException e) {
@@ -89,9 +91,9 @@ public static void testGetEventById(int id) {
 		}
 	}
 	public static void testGetAllFpUsers() {
-		List<User> users=null;
+		List<Member> users=null;
 		//users = DataMock.generateRandomUsers();
-		users=fpUserService.getAllUsers();
+		users=fpMemberService.getAllMembers();
 		display(users);
 	}
 	

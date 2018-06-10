@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.fps.service.impl.FPUserServiceImpl;
+import com.fps.service.impl.FPMemberServiceImpl;
 import com.lawnbuzz.serviceimpl.ClientServiceImpl;
 import com.lawnbuzz.serviceimpl.JobServiceImpl;
 import com.lawnbuzz.serviceimpl.ServiceProviderServiceImpl;
@@ -21,7 +21,7 @@ public class LawnBuzzDao {
 	public static JobServiceImpl jobService;
 	public static GeoLocServices geoService;
 	public static ClientServiceImpl clientService;
-	public static FPUserServiceImpl fpUserService;
+	public static FPMemberServiceImpl fpUserService;
 
 	static {
 		long startTime = System.currentTimeMillis();
@@ -68,7 +68,7 @@ public class LawnBuzzDao {
 		}
 
 		startTime = System.currentTimeMillis();
-		fpUserService = (FPUserServiceImpl) cxt.getBean("fpUserService");
+		fpUserService = (FPMemberServiceImpl) cxt.getBean("fpUserService");
 		LOGGER.info("Successfully registered fpUserService in " + Util.getTimeSince(startTime));
 
 		LOGGER.info("Successfully Created LawnBuzz DAO");

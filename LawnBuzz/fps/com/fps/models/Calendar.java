@@ -1,16 +1,16 @@
 package com.fps.models;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 public class Calendar {
 	public int id;
-	String title;
-	String label;
-	Timestamp created;
-	boolean deleted;
-	List<Member> members;
-	List<Event> events;
+	public String title;
+	public String label;
+	public Date created;
+	public boolean deleted;
+	public List<Integer> members;
+	public List<Integer> events;
 	public int getId() {
 		return id;
 	}
@@ -29,10 +29,10 @@ public class Calendar {
 	public void setLabel(String label) {
 		this.label = label;
 	}
-	public Timestamp getCreated() {
+	public Date getCreated() {
 		return created;
 	}
-	public void setCreated(Timestamp created) {
+	public void setCreated(Date created) {
 		this.created = created;
 	}
 	public boolean isDeleted() {
@@ -41,20 +41,17 @@ public class Calendar {
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 	}
-	public List<Member> getMembers() {
+	public List<Integer> getMembers() {
 		return members;
 	}
-	public void setMembers(List<Member> members) {
+	public void setMembers(List<Integer> members) {
 		this.members = members;
 	}
-	public List<Event> getEvents() {
+	public List<Integer> getEvents() {
 		return events;
 	}
-	public void setEvents(List<Event> events) {
-		this.events = events;
-	}
-	public Calendar(int id, String title, String label, Timestamp created, boolean deleted, List<Member> members,
-			List<Event> events) {
+	public Calendar(int id, String title, String label, Date created, boolean deleted, List<Integer> members,
+			List<Integer> events) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -64,6 +61,13 @@ public class Calendar {
 		this.members = members;
 		this.events = events;
 	}
+	public void setEvents(List<Integer> events) {
+		this.events = events;
+	}
+	public Calendar() {
+		
+	}
+	
 	
 
 }

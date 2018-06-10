@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 public class Util {
 
@@ -15,5 +16,10 @@ public class Util {
 		    e.printStackTrace();
 		}
 		return null;
+	}
+	public static String generateUserGUID() {
+		UUID uuid = UUID.randomUUID();
+        String randomUUIDString = uuid.toString();
+        return randomUUIDString;
 	}
 }

@@ -14,7 +14,7 @@ import javax.ws.rs.core.Context;
 
 import org.springframework.stereotype.Service;
 
-import com.fps.models.User;
+import com.fps.models.Member;
 import com.lawnbuzz.dao.LawnBuzzDao;
 
 @Service("api")
@@ -32,21 +32,21 @@ public class API {
 	@GET
 	@Path("/getFpUser")
 	@Produces("application/json")
-	public User getFpUserById(@Context HttpServletRequest request, @QueryParam("id") int id) {
-		return LawnBuzzDao.fpUserService.getUserById(id);
+	public Member getFpUserById(@Context HttpServletRequest request, @QueryParam("id") int id) {
+		return LawnBuzzDao.fpUserService.getMemberById(id);
 	}
 	@GET
 	@Path("/getAllFpUsers")
 	@Produces("application/json")
-	public List<User> getAllFpUsers(@Context HttpServletRequest request) {
-		return LawnBuzzDao.fpUserService.getAllUsers();
+	public List<Member> getAllFpUsers(@Context HttpServletRequest request) {
+		return LawnBuzzDao.fpUserService.getAllMembers();
 	}
 	@POST
 	@Path("/registerFpUser")
 	@Produces("application/json")
-	public void registerFpUser(@Context HttpServletRequest request, User user) {
+	public void registerFpUser(@Context HttpServletRequest request, Member user) {
 		System.out.println("here");
-		LawnBuzzDao.fpUserService.registerUser(user);
+		LawnBuzzDao.fpUserService.addMember(user);
 		
 				
 		
