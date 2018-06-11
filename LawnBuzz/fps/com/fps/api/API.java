@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -44,8 +45,9 @@ public class API {
 		return FPSDao.fpEventService.getEventById(id);
 	}
 	@POST
-	@Path("/registerFpUser")
+	@Path("/register")
 	@Produces("application/json")
+	@Consumes("application/json")
 	public void registerFpUser(@Context HttpServletRequest request, Member user) {
 		System.out.println("here");
 		LawnBuzzDao.fpUserService.addMember(user);

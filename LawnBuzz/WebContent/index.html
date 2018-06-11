@@ -34,25 +34,166 @@
 
 </head>
 
-<body >
-<div class="container">
+<body>
+	<div class="container">
 
-	<div class="span3">
-	<input type="date" id="date_input" placeholder="Date of Birth">
-	<input type="text" id="first_input" placeholder="First Name">
-	<input type="text" id="last_input" placeholder="Last Name">
-	<input type="text" id="phone_input" placeholder="Cell Phone">
-	<input type="text" id="email_input" placeholder="Email Adress">
-	<button id="submit_button" class="btn-large">Submit</button>
+		<div class="span6">
+			<input id="event_id_input" type="text" />
+			<button id="submit_event_id">Get Event</button>
+			<table class="table" id="event_table">
+
+			</table>
+		</div>
+		<div class="span6">
+			<input id="member_id_input" type="text" />
+			<button id="submit_member_id">Get Member</button>
+			<table class="table" id="member_table">
+
+			</table>
+		</div>
+
 	</div>
-	<div class="span3">
-	
-	</div>
-	<div class="span3">
-	
-	</div>
-</div>
-	
+	<script>
+		$(document).ready(function() {
+			$("#submit_event_id").on("click", function() {
+				var id = $("#event_id_input").val();
+				getEvent(id);
+			});
+			$("#submit_member_id").on("click", function() {
+				var id = $("#member_id_input").val();
+				getMember(id);
+			});
+
+		});
+		function getEvent(eventId) {
+
+			var url = "v1/event?id=" + eventId;
+
+			$.getJSON(url, // The server URL
+			{}, // Data you want to pass to the server.
+			buildEventTable // The function to call on completion.
+			);
+
+		}
+		function getMember(memberId) {
+
+			var url = "v1/member?id=" + memberId;
+
+			$.getJSON(url, // The server URL
+			{}, // Data you want to pass to the server.
+			buildMemberTable // The function to call on completion.
+			);
+
+		}
+		function buildMemberTable(json) {
+			console.log(JSON.stringify(json));
+			var headerArray = new Array();
+			var headerIndex = 0;
+			headerArray[headerIndex++] = 'ID';
+			headerArray[headerIndex++] = 'First';
+			headerArray[headerIndex++] = 'Last';
+			headerArray[headerIndex++] = 'Phone';
+			headerArray[headerIndex++] = 'Email';
+			headerArray[headerIndex++] = 'DOB';
+			headerArray[headerIndex++] = 'Verified';
+			headerArray[headerIndex++] = 'Username';
+			headerArray[headerIndex++] = 'GUID';
+			
+			clearTable($('#member_table'));
+			addDataHeader($('#member_table'), headerArray);
+
+			if (json == null || json.error || json.length == 0)
+				return;
+
+			var tbody = $('#member_table');
+
+			addMemberRow(tbody, json.id, json.firstname, json.lastname,
+					json.phone, json.email, json.dob, json.verified, json.username, json.identifier);
+
+		}
+		function buildEventTable(json) {
+			console.log(JSON.stringify(json));
+			var headerArray = new Array();
+			var headerIndex = 0;
+			headerArray[headerIndex++] = 'ID';
+			headerArray[headerIndex++] = 'Date';
+			headerArray[headerIndex++] = 'Type';
+			headerArray[headerIndex++] = 'Members';
+			headerArray[headerIndex++] = 'Description';
+			headerArray[headerIndex++] = 'Completed';
+			clearTable($('#event_table'));
+			addDataHeader($('#event_table'), headerArray);
+
+			if (json == null || json.error || json.length == 0)
+				return;
+
+			var tbody = $('#event_table');
+
+			addEventRow(tbody, json.eventId, json.date, json.type,
+					json.memberIds, json.description, json.completed);
+
+		}
+		function addMemberRow(tbody, id, firstname, lastname, phone,
+				email, dob, verified, username, identifier) {
+			var trow = $("<tr>");
+
+			$("<td>").append(id).appendTo(trow);
+
+			$("<td>").append(firstname).appendTo(trow);
+			$("<td>").append(lastname).appendTo(trow);
+			$("<td>").append(phone).appendTo(trow);
+			$("<td>").append(email).appendTo(trow);
+			$("<td>").append(dob).appendTo(trow);
+			$("<td>").text(verified).appendTo(trow);
+			$("<td>").append(username).appendTo(trow);
+			$("<td>").append(identifier).appendTo(trow);
+			trow.appendTo(tbody);
+		}
+		function addEventRow(tbody, eventId, date, type, memberIds,
+				description, completed) {
+			var trow = $("<tr>");
+
+			$("<td>").append(eventId).appendTo(trow);
+
+			$("<td>").append(date).appendTo(trow);
+			$("<td>").append(type).appendTo(trow);
+			$("<td>").append(memberIds).appendTo(trow);
+			$("<td>").append(description).appendTo(trow);
+			$("<td>").text(completed).appendTo(trow);
+			trow.appendTo(tbody);
+		}
+		function addDataHeader(tbody, headerArray, headerClassArray) {
+			if (tbody == null || tbody.length < 1)
+				return;
+			var trowhead = $('<thead>');
+			var trow = $('<tr>');
+			for (var ix = 0; ix < headerArray.length; ix++) {
+				var headerClass = null;
+				if (headerClassArray != null)
+					headerClass = headerClassArray[ix];
+				if (headerClass == null) {
+					$('<th>').append(headerArray[ix]).appendTo(trow);
+				} else {
+					if (headerArray[ix] == "Running") {
+						$('<th>').attr('class', headerClass).css("text-align",
+								"left").append(headerArray[ix]).appendTo(trow);
+					} else {
+						$('<th>').attr('class', headerClass).append(
+								headerArray[ix]).appendTo(trow);
+					}
+
+				}
+			}
+			trow.appendTo(trowhead);
+			trowhead.appendTo(tbody);
+		}
+		function clearTable(tbody) {
+			if (tbody == null || tbody.length < 1)
+				return;
+			tbody.empty();
+
+		}
+	</script>
 </body>
 
 
