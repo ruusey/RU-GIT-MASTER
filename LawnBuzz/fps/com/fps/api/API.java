@@ -1,4 +1,4 @@
-package com.lawnbuzz.rest;
+package com.fps.api;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,8 +14,10 @@ import javax.ws.rs.core.Context;
 
 import org.springframework.stereotype.Service;
 
+import com.fps.models.Event;
 import com.fps.models.Member;
 import com.lawnbuzz.dao.LawnBuzzDao;
+import com.lawnbuzz.rest.Response;
 
 @Service("api")
 @Path("/")
@@ -30,16 +32,16 @@ public class API {
 		return new Response(true,ip+" received a response from the API at "+timeStamp);
 	}
 	@GET
-	@Path("/getFpUser")
+	@Path("/member")
 	@Produces("application/json")
-	public Member getFpUserById(@Context HttpServletRequest request, @QueryParam("id") int id) {
-		return LawnBuzzDao.fpUserService.getMemberById(id);
+	public Member getMemberById(@Context HttpServletRequest request, @QueryParam("id") int id) {
+		return FPSDao.fpMemberService.getMemberById(id);
 	}
 	@GET
-	@Path("/getAllFpUsers")
+	@Path("/event")
 	@Produces("application/json")
-	public List<Member> getAllFpUsers(@Context HttpServletRequest request) {
-		return LawnBuzzDao.fpUserService.getAllMembers();
+	public Event getEeventById(@Context HttpServletRequest request, @QueryParam("id") int id) {
+		return FPSDao.fpEventService.getEventById(id);
 	}
 	@POST
 	@Path("/registerFpUser")

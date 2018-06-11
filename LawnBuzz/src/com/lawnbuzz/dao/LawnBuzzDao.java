@@ -13,7 +13,7 @@ import com.lawnbuzz.serviceimpl.ServiceProviderServiceImpl;
 import com.lawnbuzz.util.GeoLocServices;
 import com.lawnbuzz.util.Util;
 
-@Component
+
 public class LawnBuzzDao {
 	public static final boolean DBG = true;
 	static Logger LOGGER = Logger.getLogger(LawnBuzzDao.class.getName());

@@ -56,11 +56,15 @@ public class FPServiceTestbed {
 		//*************
 		//testGetEventById(1);
 		//testGetFpUserById(2);
-		fpCalendarService.removeCalendarMemberRole(1, 1, Role.Admin);
-		display(fpCalendarService.getCalendarMembersRoleById(1, 1));
-//		List<Integer> events = fpCalendarService.getCalendarEventsById(1);
-//		Event e = fpEventService.getEventById(events.get(0));
-//		display(e);
+		//fpCalendarService.addCalendarMemberRole(1, 1, Role.Admin);
+		display(fpCalendarService.getCalendarById(1));
+		List<Integer> events = fpCalendarService.getCalendarEventsById(1);
+		for(int i : events) {
+			Event e = fpEventService.getEventById(i);
+			display(e);
+			display(fpMemberService.getMemberById(e.memberIds.get(0)));
+		}
+		
 		
 		//testRegisterFpUser();
 		//testGetAllFpUsers();
