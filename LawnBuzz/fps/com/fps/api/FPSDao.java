@@ -10,7 +10,7 @@ import com.fps.service.impl.FPMemberServiceImpl;
 import com.fps.util.Util;
 import com.google.gson.Gson;
 
-
+@Component
 public class FPSDao {
 	public static FPMemberServiceImpl fpMemberService;
 	public static FPEventServiceImpl fpEventService;

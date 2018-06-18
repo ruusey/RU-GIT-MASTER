@@ -1,15 +1,10 @@
 package com.fps.util;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import org.glassfish.jersey.server.ContainerRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +15,6 @@ import com.fps.models.Response;
 import static com.fps.constants.Constants.*;
 
 public abstract class APIUtils {
-
   public static WebApplicationException buildWebApplicationException(
       javax.ws.rs.core.Response.Status httpResponseStatus,
       APIStatus status,
@@ -72,27 +66,7 @@ public abstract class APIUtils {
     else return value;
   }
 
-  private static boolean matchHostnamePattern(String hostname, String pattern) {
-    boolean matched = false;
-    if (hostname != null && pattern != null) {
-      String[] expressions = pattern.split("\\,");
-      for (String expression : expressions) {
-        if (expression == null) continue;
-        expression = expression.trim();
-        if (expression.length() == 0) continue;
-        expression = expression.replace(".", "[.]"); // 	Make period literal
-        expression = expression.replace("*", ".*"); // 	Make asterisk a wildcard of any character
-        Pattern p =
-            Pattern.compile(expression, Pattern.CASE_INSENSITIVE); // 	Case-Insensitive Match
-        Matcher matcher = p.matcher(hostname);
-        if (matcher.matches()) {
-          matched = true;
-          break;
-        }
-      }
-    }
-    return matched;
-  }
+ 
 
   public static String getPath(HttpServletRequest request) {
     String url = "";

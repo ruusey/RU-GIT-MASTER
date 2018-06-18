@@ -61,7 +61,7 @@ public class FPServiceTestbed {
 		for(int i : events) {
 			Event e = fpEventService.getEventById(i);
 			display(e);
-			display(fpMemberService.getMemberById(e.memberIds.get(0)));
+			display(fpMemberService.getMemberById(e.getMemberIds().get(0)));
 		}
 		
 		
@@ -79,11 +79,11 @@ public static void testGetEventById(int id) {
 		
 		Event result = fpEventService.getEventById(id);
 		display(result);
-		for(int i : result.memberIds) {
+		for(int i : result.getMemberIds()) {
 			testGetFpUserById(i);
-			testGetUserEventRequirements(result.eventId,i);
-			testRemoveUserEventRequirement(result.eventId,i,Requirement.ArriveOnTime);
-			testGetUserEventRequirements(result.eventId,i);
+			testGetUserEventRequirements(result.getEventId(),i);
+			testRemoveUserEventRequirement(result.getEventId(),i,Requirement.ArriveOnTime);
+			testGetUserEventRequirements(result.getEventId(),i);
 		}
 	}
 	public static void testGetFpUserById(int id) {

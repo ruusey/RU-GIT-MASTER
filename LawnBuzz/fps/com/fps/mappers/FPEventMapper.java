@@ -16,11 +16,9 @@ import org.apache.ibatis.type.JdbcType;
 
 import com.fps.constants.EventType;
 import com.fps.constants.Outcome;
-import com.fps.constants.Privledge;
 import com.fps.constants.Requirement;
 import com.fps.constants.Role;
 import com.fps.models.Event;
-import com.fps.models.Member;
 
 public interface FPEventMapper {
 	// ********************************

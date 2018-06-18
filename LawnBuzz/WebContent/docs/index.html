@@ -41,8 +41,9 @@
 
       // Build a system
       const ui = SwaggerUIBundle({
-        url: "http://localhost:8080/fps-api/api/swagger.json",
+        url: "http://192.168.1.97:8080/fps-api/api/swagger.json",
         dom_id: '#swagger-ui',
+        validatorUrl: null,
         deepLinking: true,
         presets: [
           SwaggerUIBundle.presets.apis,

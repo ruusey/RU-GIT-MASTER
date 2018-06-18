@@ -29,12 +29,6 @@
     </repositories>
     <dependencies>
 
-
-
-
-
-
-
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jersey2-jaxrs</artifactId>
@@ -183,11 +177,7 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-nop</artifactId>
-            <version>1.7.25</version>
-        </dependency>
+      
         <!-- https://mvnrepository.com/artifact/com.owlike/genson -->
         <dependency>
             <groupId>com.owlike</groupId>
