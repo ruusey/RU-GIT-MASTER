@@ -21,7 +21,6 @@ import com.fps.constants.Requirement;
 import com.fps.constants.Role;
 import com.fps.models.Event;
 import com.fps.models.Member;
-import com.lawnbuzz.models.GeoLocation;
 
 public interface FPEventMapper {
 	// ********************************

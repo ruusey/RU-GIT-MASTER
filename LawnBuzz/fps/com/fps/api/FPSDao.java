@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 import com.fps.service.impl.FPCalendarServiceImpl;
 import com.fps.service.impl.FPEventServiceImpl;
 import com.fps.service.impl.FPMemberServiceImpl;
+import com.fps.util.Util;
 import com.google.gson.Gson;
-import com.lawnbuzz.util.Util;
 
-@Component
+
 public class FPSDao {
 	public static FPMemberServiceImpl fpMemberService;
 	public static FPEventServiceImpl fpEventService;

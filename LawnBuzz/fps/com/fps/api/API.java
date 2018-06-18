@@ -1,59 +1,159 @@
 package com.fps.api;
 
+import static org.mockito.Matchers.intThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import com.fps.constants.APIStatus;
+import com.fps.constants.EventType;
 import com.fps.models.Event;
 import com.fps.models.Member;
-import com.lawnbuzz.dao.LawnBuzzDao;
-import com.lawnbuzz.rest.Response;
 
-@Service("api")
-@Path("/")
+import com.fps.util.APIUtils;
+import com.fps.util.Util;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+@Path("/v1")
+@Api(value = "/v1", description = "Nucleus API")
 public class API {
-	
-	@GET
-	@Path("/ping")
-	@Produces("application/json")
-	public Response ping(@Context HttpServletRequest request) {
-		String ip = request.getRemoteAddr();
-		String timeStamp = new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss").format(Calendar.getInstance().getTime());
-		return new Response(true,ip+" received a response from the API at "+timeStamp);
-	}
-	@GET
-	@Path("/member")
-	@Produces("application/json")
-	public Member getMemberById(@Context HttpServletRequest request, @QueryParam("id") int id) {
-		return FPSDao.fpMemberService.getMemberById(id);
-	}
-	@GET
-	@Path("/event")
-	@Produces("application/json")
-	public Event getEeventById(@Context HttpServletRequest request, @QueryParam("id") int id) {
-		return FPSDao.fpEventService.getEventById(id);
-	}
-	@POST
-	@Path("/register")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public void registerFpUser(@Context HttpServletRequest request, Member user) {
-		System.out.println("here");
-		LawnBuzzDao.fpUserService.addMember(user);
-		
-				
-		
-	}
-	
+  @Autowired FPSDao dao;
+
+  @ApiOperation("Handle ping request from client")
+  @ApiResponses({@ApiResponse(code = 200, message = "OK: pong", response = Response.class)})
+  @GET
+  @Path("/ping")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response ping(@Context HttpServletRequest request) {
+    String timeStamp =
+        new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss").format(Calendar.getInstance().getTime());
+
+    return Response.ok("pong").build();
+  }
+
+  @GET
+  @Path("/member/{member_id}")
+  @Produces("application/json")
+  @ApiOperation(
+      value = "Find a Member by ID",
+      notes = "Returns the Member associated with the ID passed",
+      response = Member.class)
+  public Response getMemberById(
+      @Context HttpServletRequest request,
+      @ApiParam(value = "ID of the Member to be retrieved", required = true) @PathParam("member_id")
+          int memberId) {
+
+    return Response.ok("Member retrieved succesfully")
+        .entity(FPSDao.fpMemberService.getMemberById(memberId))
+        .build();
+  }
+
+  @GET
+  @Path("/event/{event_id}")
+  @Produces("application/json")
+  @ApiOperation(
+      value = "Find an Event by ID",
+      notes = "Returns the Event associated with the ID passed",
+      response = Event.class)
+  public Response getEeventById(
+      @Context HttpServletRequest request,
+      @ApiParam(value = "ID of the Event to be retrieved", required = true) @PathParam("event_id")
+          int eventId) {
+    return Response.ok("Event retrieved succesfully")
+        .entity(FPSDao.fpEventService.getEventById(eventId))
+        .build();
+  }
+
+  @GET
+  @Path("/calendar/{calendar_id}")
+  @Produces("application/json")
+  @ApiOperation(
+      value = "Find a Calendar by ID",
+      notes = "Returns the Calendar associated with the ID passed",
+      response = Event.class)
+  public Response getCalendarById(
+      @Context HttpServletRequest request,
+      @ApiParam(value = "ID of the Calendar to be retrieved", required = true)
+          @PathParam("calendar_id")
+          int calendarId) {
+    com.fps.models.Calendar ca = FPSDao.fpCalendarService.getCalendarById(calendarId);
+    ca.events = FPSDao.fpCalendarService.getCalendarEventsById(calendarId);
+    ca.members = FPSDao.fpCalendarService.getCalendarMembersById(calendarId);
+    return Response.ok("Calendar retrieved succesfully").entity(ca).build();
+  }
+
+  @POST
+  @Path("/member/{member_id}/update")
+  @ApiOperation(
+      value = "Update a Member's data",
+      notes = "Updates Member data based on the parameters passed",
+      response = Event.class)
+  @Consumes("application/json")
+  public Response updateMember(
+      @Context HttpServletRequest request,
+      @ApiParam(value = "ID of the Member to be updated", required = true)
+      @PathParam("member_id") int memberId,
+      @QueryParam("first_name") String firstName,
+      @QueryParam("last_name") String lastName,
+      @QueryParam("username") String username,
+      @QueryParam("dob") String dob,
+      @QueryParam("phone") String phone,
+      @QueryParam("email") String email) {
+	  int updated = -1;
+
+    if (firstName != null) {updated = FPSDao.fpMemberService.updateMemberFirstName(memberId, firstName);}
+
+    if (lastName != null) {updated = FPSDao.fpMemberService.updateMemberLastName(memberId, lastName);}
+
+    if (dob != null) {updated = FPSDao.fpMemberService.updateMemberDOB(memberId, Util.parseDateSimple(dob));}
+
+    if (phone != null) {updated = FPSDao.fpMemberService.updateMemberPhone(memberId, phone);}
+
+    if (email != null) {updated = FPSDao.fpMemberService.updateMemberEmail(memberId, email);}
+    
+    if (username != null) {updated = FPSDao.fpMemberService.updateMemberUsername(memberId, username);}
+    
+    if(updated>0) {
+    	return Response.ok("Member update successful").build();
+    }else {
+    	return Response.ok("Member update unsucessful").build();
+    }
+  }
+  //
+  //  @POST
+  //  @Path("/event/{event_id}/update")
+  //  @Produces("application/json")
+  //  @Consumes("application/json")
+  //  public void updateEvent(
+  //      @Context HttpServletRequest request,
+  //      @PathParam("event_id") int eventId,
+  //      @QueryParam("date") String date,
+  //      @QueryParam("type") EventType type,
+  //      @QueryParam("description") String launchCount) {}
 }

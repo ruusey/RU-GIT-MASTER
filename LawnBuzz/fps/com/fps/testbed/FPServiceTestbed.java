@@ -16,9 +16,8 @@ import com.fps.models.Member;
 import com.fps.service.impl.FPCalendarServiceImpl;
 import com.fps.service.impl.FPEventServiceImpl;
 import com.fps.service.impl.FPMemberServiceImpl;
+import com.fps.util.Util;
 import com.google.gson.Gson;
-import com.lawnbuzz.dao.LawnBuzzDao;
-import com.lawnbuzz.util.Util;
 import com.owlike.genson.Genson;
 import com.owlike.genson.GensonBuilder;
 
@@ -27,7 +26,7 @@ public class FPServiceTestbed {
 	public static FPEventServiceImpl fpEventService;
 	public static FPCalendarServiceImpl fpCalendarService;
 	static Gson gson = new Gson();  
-	static Logger LOGGER = Logger.getLogger(LawnBuzzDao.class.getName());
+	static Logger LOGGER = Logger.getLogger(FPServiceTestbed.class.getName());
 	public static void main(String[] args) {
 		
 		long startTime = System.currentTimeMillis();
